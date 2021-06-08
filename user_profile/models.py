@@ -93,13 +93,12 @@ class UserProfile(models.Model):
     ]
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    profile_picture = models.ImageField()
     bio = models.CharField(max_length=255, blank=True)
     education = models.ManyToManyField(Education, blank=True)
     work = models.ManyToManyField(Work,blank=True)
     birthday = models.DateField()
     hometown = models.ForeignKey(City, on_delete=models.CASCADE, blank=True)
-    gender = models.CharField(choices=GENDER_CHOICES,max_length=1)
+    gender = models.CharField(choices=GENDER_CHOICES,max_length=1,default=FEMALE)
     relationship_status = models.CharField(
         choices=RELATIONSHIP_STATUS_CHOICES, max_length=1, default=SINGLE)
     def get_age(self):
