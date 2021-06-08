@@ -27,7 +27,7 @@ if READ_DOT_ENV_FILE:
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=sp+74!u@y%m12f60ff#h*6vc8kevv_p@0pb8s@y$b+ipw7tgy'
+SECRET_KEY = env.str('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
