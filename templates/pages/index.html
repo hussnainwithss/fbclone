@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link href="{% static 'css/index.css' %}" rel="stylesheet">
+{% endblock css %}
+
+{% block header-content %}
+<form method="POST" action={% url 'accounts:login' %}>
+  {% csrf_token %}
+<div class="row">
+  <div class="col-sm-5">
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Username" name='username' required>
+      <div class="login-bottom-text checkbox hidden-sm">
+        <input class="form-check-input" type="checkbox" id="rememberMe" name='remember' >
+        <label class="form-check-label" for="rememberMe">
+          Remember Me
+        </label></div>
+    </div>
+  </div>
+  <div class="col-sm-5">
+    <div class="form-group">
+      <input type="password" class="form-control" placeholder="Password" name='password' required>
+      <div class="login-bottom-text hidden-sm"><a href='#'> Forgot your password? </a></div>
+    </div>
+  </div>
+  <div class="col-sm-2">
+    <div class="form-group">
+      <input type="submit" value="login" class="btn  btn-light">
+    </div>
+  </div>
+</div>
+</form>
+{% endblock %}
+
+
