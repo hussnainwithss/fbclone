@@ -17,11 +17,10 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from django.views.generic import TemplateView
 
 
 urlpatterns = [
-    path('',TemplateView.as_view(template_name='pages/index.html'),name='index'),
     path('admin/', admin.site.urls),
-    path('accounts/',include('accounts.urls'),name='accounts')
+    path('accounts/',include('accounts.urls'),name='accounts'),
+    path('',include('user_profile.urls'),name='user_profile')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

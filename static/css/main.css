@@ -24,3 +24,10 @@ header{
 	padding-top: 25px;
     padding-bottom: 5px;
 }
+
+header .form-group{
+	margin-bottom: 0px;
+}
+header .btn-header-login{
+	margin-bottom: 15px;	
+}

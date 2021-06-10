@@ -12,8 +12,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import environ
+import sys
 from django.contrib.messages import constants as messages
 
+sys.modules['fontawesome_free'] = __import__('fontawesome-free')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # todo_list_backend/
@@ -45,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user_profile.apps.UserProfileConfig',
-    'accounts.apps.AccountsConfig'
+    'accounts.apps.AccountsConfig',
+    'fontawesome_free'
 ]
 
 MIDDLEWARE = [
@@ -147,3 +150,7 @@ MESSAGE_TAGS = {
 }
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+
+LOGIN_REDIRECT_URL = 'user_profile:index'
+LOGOUT_REDIRECT_URL = 'user_profile:index'

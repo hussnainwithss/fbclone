@@ -16,9 +16,22 @@
     text-decoration:underline;
 }
 
-header .form-group{
-	margin-bottom: 0px;
+
+
+.login-main{
+	margin-top: 130px;
 }
+
+.register-main{
+	margin-top: 50px;
+}
+.multibox{
+	padding-left: 0px;
+	padding-bottom: 10px;
+}
+.login-main span{
+	font-size: 12px;
+} 
 
 
 

@@ -6,33 +6,95 @@
 <link href="{% static 'css/index.css' %}" rel="stylesheet">
 {% endblock css %}
 
-{% block header-content %}
-<form method="POST" action={% url 'accounts:login' %}>
-  {% csrf_token %}
-<div class="row">
-  <div class="col-sm-5">
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="Username" name='username' required>
-      <div class="login-bottom-text checkbox hidden-sm">
-        <input class="form-check-input" type="checkbox" id="rememberMe" name='remember' >
-        <label class="form-check-label" for="rememberMe">
-          Remember Me
-        </label></div>
-    </div>
-  </div>
-  <div class="col-sm-5">
-    <div class="form-group">
-      <input type="password" class="form-control" placeholder="Password" name='password' required>
-      <div class="login-bottom-text hidden-sm"><a href={% url 'index' %}> Forgot your password? </a></div>
-    </div>
-  </div>
-  <div class="col-sm-2">
-    <div class="form-group">
-      <input type="submit" value="login" class="btn  btn-success">
-    </div>
-  </div>
-</div>
-</form>
-{% endblock %}
+{% block body-content %}
+<article class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="login-main">
+                <h4><i class="fa fa-dashboard"></i> Gorgeous color and design</h4>
+                <span>Some sample description text about the template goes here</span>
 
+                <h4> <i class="fa fa-money"></i> 100%  fully responsive </h4>
+                <span>Another description text about the template goes here</span>
+
+                <h4><i class="fa fa-mobile-phone"></i> Competible with all browers and mobile devices</h4>
+                <span>Yet another sample description text can be placed in one line</span>
+
+                <h4> <i class="fa fa-trophy"></i> Easy to use and custmize with mobile friendly and responsive</h4>
+                <span>Your last description text about your startup or business</span>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="register-main">
+            
+            <h3><i class="fa fa-shield"></i> Register now</h3>
+              <hr>
+              <div class="row">
+                <div class="form-group col-md-6 col-s-12">
+                    <label for="firstname" class="sr-only"></label>
+                    <input id="firstname" class="form-control input-group-lg reg_name" type="text" name="firstname"
+                           title="Enter first name"
+                           placeholder="First name"/>
+                </div>
+    
+                <div class="form-group col-md-6 col-s-12">
+                    <label for="lastname" class="sr-only"></label>
+                    <input id="lastname" class="form-control input-group-lg reg_name" type="text" name="lastname"
+                           title="Enter last name"
+                           placeholder="Last name"/>
+                </div>
+            </div> 
+            <div class="form-group">
+              <label class="control-label" for="">Email Address</label>
+              <input type="email" class="form-control" placeholder="Email Address">
+            </div>
+
+            <div class="form-group">
+              <label class="control-label" for="">Password</label>
+              <input type="password" class="form-control" placeholder="Password">
+            </div>
+
+            <div class="form-group">
+              <label class="control-label" for="">Repeat Password</label>
+              <input type="password" class="form-control" placeholder="Repeat Password">
+            </div>
+
+            <div class="form-group">
+                <label>Birthday</label>
+              <div class="form-group">
+                  <div class="col-sm-4 multibox">
+                     <select class="form-control">
+                         <option>Day</option>
+                     </select>
+                  </div>
+                   <div class="col-sm-4 multibox">
+                     <select class="form-control">
+                         <option>Month</option>
+                     </select>
+                  </div>
+                   <div class="col-sm-4 multibox">
+                     <select class="form-control">
+                         <option>Year</option>
+                     </select>
+                  </div>
+               
+              </div>
+            </div>
+          
+            <small>
+                By clicking Sign Up, you agree to our Terms and that you have read our
+                 Data Use Policy, including our Cookie Use.
+            </small>	 
+            <div style="height:10px;"></div>
+            <div class="form-group">
+              <label class="control-label" for=""></label>
+              <input type="submit" class="btn btn-primary">
+            </div>	 
+
+              </div>
+        </div>
+        </div>
+    </div>
+</article>
+{% endblock %}
 
