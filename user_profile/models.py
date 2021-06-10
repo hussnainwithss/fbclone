@@ -95,6 +95,8 @@ class UserProfile(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.CharField(max_length=255, blank=True)
     profile_picture = models.ImageField(upload_to='UserProfiles',blank=True)
+    cover_picture = models.ImageField(upload_to='UserProfiles',blank=True)
+   
     education = models.ManyToManyField(Education, blank=True)
     work = models.ManyToManyField(Work,blank=True)
     birthday = models.DateField()
@@ -106,4 +108,4 @@ class UserProfile(models.Model):
         return relativedelta(datetime.date.today(), self.birthday)
 
     def __str__(self):
-        return self.user.username
+        return self.user.email
