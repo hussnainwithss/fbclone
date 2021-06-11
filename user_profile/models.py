@@ -92,7 +92,7 @@ class UserProfile(models.Model):
         ('O','Other')
     ]
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name="profile")
     bio = models.CharField(max_length=255, blank=True)
     profile_picture = models.ImageField(upload_to='UserProfiles',blank=True)
     cover_picture = models.ImageField(upload_to='UserProfiles',blank=True)
@@ -100,7 +100,7 @@ class UserProfile(models.Model):
     education = models.ManyToManyField(Education, blank=True)
     work = models.ManyToManyField(Work,blank=True)
     birthday = models.DateField()
-    hometown = models.ForeignKey(City, on_delete=models.CASCADE, blank=True)
+    hometown = models.ForeignKey(City,on_delete=models.CASCADE,blank=True,null=True)
     gender = models.CharField(choices=GENDER_CHOICES,max_length=1,default=FEMALE)
     relationship_status = models.CharField(
         choices=RELATIONSHIP_STATUS_CHOICES, max_length=1, default=SINGLE)
