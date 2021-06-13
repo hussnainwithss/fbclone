@@ -150,6 +150,5 @@ MESSAGE_TAGS = {
 }
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+LOGIN_URL = 'user_profile:index'
 
-
-LOGIN_REDIRECT_URL = 'user_profile:index'
