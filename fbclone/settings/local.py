@@ -11,4 +11,12 @@ DATABASES = {
     }
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST= 'smtp.google.com'
+# EMAIL_PORT: 587
+# EMAIL_HOST_USER=env('EMAIL_USERNAME')
+# EMAIL_HOST_PASSWORD=env('EMAIL_PASSWORD')
+# EMAIL_USE_TLS = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = BASE_DIR /'tmp/app-messages' # change this to a proper location
