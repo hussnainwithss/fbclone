@@ -16,7 +16,7 @@ class City(models.Model):
         return super(City, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.name
+        return self.name.title()
 
 
 
@@ -30,7 +30,7 @@ class Organization(models.Model):
         return super(Organization, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{name} @ {location}".format(name=self.name, location=self.city)
+        return "{name} ".format(name=self.name.title())
 
     class Meta:
         unique_together = ['name', 'city']
@@ -48,8 +48,8 @@ class Education(models.Model):
         return super(Education, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{degree} ({field}) @ {school}".format(degree=self.degree, 
-        field=self.field, school=self.school.name)
+        return "{degree} ({field}) @ {school}".format(degree=self.degree.upper(), 
+        field=self.field.title(), school=self.school.name.title())
 
     class Meta:
         unique_together = ['school', 'degree', 'field','is_completed']
@@ -65,31 +65,31 @@ class Work(models.Model):
         return super(Work, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{designation} @ {org}".format(designation=self.designation, org=self.organization)
+        return "{designation} @ {org}".format(designation=self.designation.title(), org=self.organization)
     
     class Meta:
         unique_together = ['organization','designation','have_left']
 
 
 class UserProfile(models.Model):
-    SINGLE = 'S'
-    COMMITTED = 'C'
-    MARRIED = 'M'
-    DIVORCED = 'D'
-    MALE = 'M'
-    FEMALE = 'F'
-    OTHER = 'O'
+    SINGLE = 'Single'
+    COMMITTED = 'Committed'
+    MARRIED = 'Married'
+    DIVORCED = 'Divorced'
+    MALE = 'Male'
+    FEMALE = 'Female'
+    OTHERS = 'Others'
     RELATIONSHIP_STATUS_CHOICES = [
-        ('S', 'Single'),
-        ('C', 'Committed'),
-        ('M', 'Married'),
-        ('D', 'Divorced')
+        ('Single', 'Single'),
+        ('Committed', 'Committed'),
+        ('Married', 'Married'),
+        ('Divorced', 'Divorced')
     ]
 
     GENDER_CHOICES = [
-        ('F', 'Female'),
-        ('M', 'Male'),
-        ('O','Other')
+        ('Female', 'Female'),
+        ('Male', 'Male'),
+        ('Others','Others')
     ]
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name="profile")
@@ -101,11 +101,11 @@ class UserProfile(models.Model):
     work = models.ManyToManyField(Work,blank=True)
     birthday = models.DateField()
     hometown = models.ForeignKey(City,on_delete=models.CASCADE,blank=True,null=True)
-    gender = models.CharField(choices=GENDER_CHOICES,max_length=1,default=FEMALE)
+    gender = models.CharField(choices=GENDER_CHOICES,max_length=6,default=FEMALE)
     relationship_status = models.CharField(
-        choices=RELATIONSHIP_STATUS_CHOICES, max_length=1, default=SINGLE)
+        choices=RELATIONSHIP_STATUS_CHOICES, max_length=10, default=SINGLE)
     def get_age(self):
-        return relativedelta(datetime.date.today(), self.birthday)
+        return relativedelta(datetime.date.today(), self.birthday).years
 
     def __str__(self):
         return self.user.email

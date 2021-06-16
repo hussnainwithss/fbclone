@@ -2,9 +2,9 @@ from django.db.utils import IntegrityError
 from user_profile.models import UserProfile
 from django.shortcuts import render,redirect
 from django.views import View
-from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth import authenticate, login,logout,update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from django.core.exceptions import ValidationError
 from . import managers,models
 
 
@@ -82,3 +82,15 @@ class Register(View):
             return redirect('user_profile:index')
         
 
+class ChangePasswordView(View):
+    def post(self,request,*args,**kwargs):
+        form = PasswordChangeForm(request.user,request.POST)
+        if form.is_valid():
+            user=form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request,'Password successfully updated!')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+            messages.error(request,form.errors.as_text())
+        return redirect('user_profile:dashboard')
+        

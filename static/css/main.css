@@ -1,5 +1,6 @@
 body{
     font-family: 'Open Sans', sans-serif;
+	background: #f8f8f8;
 }
 
 .alert{
@@ -32,10 +33,7 @@ header .btn-header-login{
 	margin-bottom: 15px;	
 }
 
-.profile-badge{
-	background-color: #ffffff;
-	opacity: 0.2;
-}
+
 
 
 
@@ -72,11 +70,105 @@ header .btn-header-login{
 	font-size: 12px;
 } 
 
-.profile-image{
-	width: 60px;
-	height: 60px;
-	margin-right: 10px;
+
+.profile-badge{
+	color: white;
 }
 
 
+.profile-badge > img{
+	width: 40px;
+	height: 40px;
+}
 
+.cover-picture img{
+	min-width: 100%;
+	min-height: 400px;
+	max-height: 400px;
+	box-shadow: 0 8px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) inset;
+}
+
+.no-padding{
+	padding:0;
+}
+
+.cover-profile{
+	position: relative;
+}
+
+.profile-picture{
+	z-index: 9;
+	margin-top: 270px;
+	margin-left: 200px;
+}
+
+.profile-picture > img {
+	width: 152px;
+	height: 152px;
+	
+}
+.profile-text{
+	font-size: 30px;
+	color: white;
+	padding-left: 10px;
+}
+
+.parent{
+	position: relative;
+	left:0;
+	top:0;
+}
+
+.image1{
+	position: relative;
+	top:0;
+	left:0;	
+}
+
+.image2{
+	position: absolute;
+	top:30px;
+	left:30px;
+
+}
+
+.accordion {
+	padding-top: 60px;
+}
+
+.overlay {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	opacity: 0;
+	width: 152px;
+	height: 152px;
+	
+	transition: .5s ease;
+	background:rgba(0,0,0,0.6);
+  }
+
+
+  .overlay-cover{
+	  height: 100%;
+	  width: 100%;
+  }
+  .profile-picture:hover .overlay {
+	opacity: 1;
+  }
+  
+  .cover-picture:hover .overlay-cover{
+	  opacity: 1;
+  }
+  .text {
+	color: white;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	text-align: center;
+  }

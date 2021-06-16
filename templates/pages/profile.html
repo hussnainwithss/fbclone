@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{%block body-content %}
+<section>
+    <div class="parent">
+        <div class="cover-picture image1">
+            <img class='img-responsive' src={% if user.profile.cover_picture %} {{user.profile.cover_picture.url}} {%else %} {% static 'images/cover.svg' %} {% endif %} class="d-block w-100" alt="Cover">
+                <a href='#' data-bs-toggle="modal" data-bs-target="#uploadCoverPictureModal">
+            
+                <div class="overlay overlay-cover ">
+                    <div class="text">Update Cover Picture</div>
+            </div>
+            </a>
+        </div>
+        <div class="profile-picture image2">
+            <img class='img-responsive rounded-circle border border-light border-2' src={% if user.profile.profile_picture %} {{user.profile.profile_picture.url}} {% else %} {%static 'images/user.png' %} {% endif %} class="d-block w-100" alt="Cover">
+            <a href='#' data-bs-toggle="modal" data-bs-target="#uploadProfilePictureModal">
+                
+            <div class="overlay rounded-circle">
+                    <div class="text">Update Profile Picture</div>
+            </div>
+        </a>
+           
+           
+            <span class='profile-text'>{{user.get_full_name}}, {{user.profile.get_age}}</span>
+
+        </div>
+
+    </div>
+</section>
+
+<section>
+    <div class='container'>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="accordion" id="userInfo">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                                aria-controls="panelsStayOpen-collapseOne">
+                                Bio
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
+                            aria-labelledby="panelsStayOpen-headingOne">
+                            <div class="accordion-body">
+                                {% if user.profile.bio %}
+                                    <strong>{{user.profile.bio}}</strong>
+                                {% else %}
+                                    Please Update Your Bio
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne" aria-controls="collapseOne">
+                                Personal Information
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                            data-bs-parent="#userInfo">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-3"><strong>Birthday:</strong></div>
+
+                                    <div class="col-6">{{user.profile.birthday}}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3"><strong>Town:</strong></div>
+                                    <div class="col-6"> {% if user.profile.hometown %}
+                                        {{user.profile.hometown}}
+                                        {% else %}
+                                        Hometown Not set
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-3"><strong>Gender:</strong></div>
+                                    <div class="col-6"> {{user.profile.gender}}
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTwo" aria-controls="collapseTwo">
+                                Education & Work
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                            data-bs-parent="#userInfo">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-3"><strong>Work:</strong></div>
+
+                                    <div class="col-6">
+                                        {% if user.profile.work.all %}
+                                        <ul>
+                                            {% for work in user.profile.work.all %}
+                                            <li>{{work}} {% if not user.profile.work.have_left %} (Current) {%endif%}
+                                            </li>
+                                            {% endfor %}
+                                            {% else %}
+                                            Not Working yet
+                                            {% endif %}
+                                    </div>
+                                    </ul>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-3"><strong>Education:</strong></div>
+
+                                    <div class="col-6">
+                                        {% if user.profile.education.all %}
+                                        <ul>
+                                            {% for education in user.profile.education.all %}
+                                            <li>{{education}} {% if not user.profile.education.is_complete %} (Currently
+                                                Studying) {%endif%}</li>
+                                            {% endfor %}
+                                            {% else %}
+                                            Nothing to show
+                                            {% endif %}
+                                    </div>
+                                    </ul>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Relationships
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                            data-bs-parent="#userInfo">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-6"><strong>Relationship Status:</strong></div>
+                                    <div class="col-6"> {{user.profile.relationship_status}}
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="accordion" id="userProfileUpdate">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="updateProfile">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#profileUpdate" aria-controls="profileUpdate">
+                                Update Profile
+                            </button>
+                        </h2>
+                        <div id="profileUpdate" class="accordion-collapse collapse show" aria-labelledby="updateProfile"
+                            data-bs-parent="#userProfileUpdate">
+                            <div class="accordion-body">
+                                <form action={% url 'user_profile:update-profile'%} method="POST">
+                                    {% csrf_token %}
+                                    <div class="row mb-2">
+                                        <div class="col-md-6"> 
+                                            <label for="firstName" class="form-label"><strong>First Name:</strong></label>
+                                            <input type="text" class="form-control" id="firstName" placeholder="First Name" value={{user.first_name}} name='first_name'>
+                                          </div>
+                                        <div class="col-md-6">
+                                            <label for="lastName" class="form-label"><strong>Last Name:</strong></label>
+                                            <input type="text" class="form-control" id="lastName" placeholder="Last Name" value={{user.last_name}} name='last_name'>
+                                        
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="email" class="form-label"><strong>E-mail Address:</strong></label>
+                                        <input type="text" class="form-control" id="email" placeholder="E-mail Address" value={{user.email}} name='email'>
+                                        
+                                    </div>
+                                <div class="mb-2">
+                                    <label for="bio" class="form-label"><strong>Bio:</strong></label>
+                                    <textarea class="form-control" id="bio" rows="2" value="{{user.profile.bio}}" name='bio'>{{user.profile.bio}}</textarea>
+                                  </div>
+                                  
+                                  <div class="form-group mb-2">
+                                    <label for="gender mb-2"><strong>Gender:</strong></label>
+                                    <div class="row">
+                                      <div class="col-md-1 me-2">
+                                        <div class="form-check">
+                                          <input class="form-check-input" type="radio" name="gender" id='gender-male' value='Male' {% if user.profile.gender == 'Male' %} checked {% endif %} required>
+                                          <label class="form-check-label" for="gender-male">
+                                            Male
+                                          </label>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-1 me-4">
+                                        <div class="form-check">
+                                          <input class="form-check-input" type="radio" name="gender" id="gender-male" value='Female' {% if user.profile.gender == 'Female' %} checked {% endif %}>
+                                          <label class="form-check-label" for="gender-female">
+                                            Female
+                                          </label>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-1 me-2">
+                                        <div class="form-check">
+                                          <input class="form-check-input" type="radio" name="gender" id="gender-others" value='Others' {% if user.profile.gender == 'Other' %} checked {% endif %}>
+                                          <label class="form-check-label" for="gender-others">
+                                            Others
+                                          </label>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="mb-2">
+                                    <label for="birthday" class='mb-2'><strong>Birthday:</strong></label>
+                                      <input type="date" name="birthday" class="form-control" value="{{user.profile.birthday|date:'c'}}"  >   
+                                  </div>
+                                  <div class="mb-2">
+                                    <label for="relationship-status" class='mb-2'><strong>Relationship Status:</strong></label>
+                                    
+                                    <select class="form-select" id='relationship-status' name='relationship_status'>
+                                        <option {% if user.profile.relationship_status == 'Single'%} selected {% endif %} value="Single">Single</option>
+                                        <option {% if user.profile.relationship_status == 'Committed'%} selected {% endif %} value="Committed">Committed</option>
+                                        <option {% if user.profile.relationship_status == 'Married'%} selected {% endif %}value="Married">Married</option>
+                                        <option {% if user.profile.relationship_status == 'Divorced'%} selected {% endif %}value="Divorced">Divorced</option>
+                                        
+                                      </select>
+                                  </div>
+                                  <button type="submit" class="btn btn-primary">Update Profile</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="updatePassword">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#passwordUpdate" aria-controls="passwordUpdate">
+                                Update Password
+                            </button>
+                        </h2>
+                        <div id="passwordUpdate" class="accordion-collapse collapse"
+                            aria-labelledby="updatePassword" data-bs-parent="#userProfileUpdate">
+                            <div class="accordion-body">
+                                <form method='POST' action={% url 'accounts:change_password' %}>
+                                    {% csrf_token %}
+                                    <div class="mb-2">
+                                        <label for="currentPassword" class="form-label"><strong>Current
+                                                Password*</strong></label>
+                                        <input type="password" class="form-control" id="currentPassword"
+                                            name='old_password' required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="newPassword1" class="form-label"><strong>New
+                                                Password*</strong></label>
+                                        <input type="password" class="form-control" id="newPassword1"
+                                            name='new_password1' aria-describedby="newPasswordRequirements" required>
+                                        <div class="form-text" id='newPasswordRequirements'>
+                                            <ul>
+                                                <li>Your password can’t be too similar to your other personal
+                                                    information.</li>
+                                                <li>Your password must contain at least 8 characters.</li>
+                                                <li>Your password can’t be a commonly used password.</li>
+                                                <li>Your password can’t be entirely numeric.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="newPasssword2" class="form-label"><strong>Confirm New
+                                                Password*</strong></label>
+                                        <input type="password" class="form-control" id="newPasssword2"
+                                            name='new_password2' required>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Update Password</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+ <!-- Profile Picture Update Modal -->
+ <div class="modal fade" id="uploadProfilePictureModal" tabindex="-1" aria-labelledby="profilePictureUploadModalLabel"
+ aria-hidden="true">
+ <div class="modal-dialog">
+     <div class="modal-content">
+         <div class="modal-header">
+             <h5 class="modal-title" id="profilePictureUploadModalLabel">Upload New Profile Picture</h5>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form method="POST" action={% url 'user_profile:update-profile-picture' %} enctype="multipart/form-data">
+            {% csrf_token %}
+                
+         <div class="modal-body">
+                <div class="mb-1">
+                    <input accept="image/*" type="file" class="form-control" name='profile_picture' required>
+                  </div>
+         </div>
+         <div class="modal-footer">
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+             <button type="submit" class="btn btn-primary">Update</button>
+         </div>
+        </form>
+         
+     </div>
+ </div>
+</div>
+
+<!-- Cover Picture Update Modal -->
+<div class="modal fade" id="uploadCoverPictureModal" tabindex="-1" aria-labelledby="coverPictureUploadModalLabel"
+aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="coverPictureUploadModalLabel">Upload New Cover Picture</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="POST" action={% url 'user_profile:update-cover-picture' %} enctype="multipart/form-data">
+           {% csrf_token %}
+               
+        <div class="modal-body">
+               <div class="mb-1">
+                   <input accept="image/*" type="file" class="form-control" name='cover_picture' required>
+                 </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+       </form>
+        
+    </div>
+</div>
+</div>
+
+{% endblock %}
