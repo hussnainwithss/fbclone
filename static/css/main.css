@@ -172,3 +172,7 @@ header .btn-header-login{
 	transform: translate(-50%, -50%);
 	text-align: center;
   }
+
+  .password-reset-card{
+	margin-top: 100px
+  }
