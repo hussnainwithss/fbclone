@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import fields
-from . import models
+from django.http import request
+from . import models, views
 
 class ProfilePictureForm(forms.ModelForm):
     class Meta:
@@ -18,5 +19,6 @@ class ProfileUpdate(forms.ModelForm):
     email = forms.EmailField()
     class Meta:
         model = models.UserProfile
-        fields = ['bio','gender','birthday','relationship_status','first_name','last_name','email']
+        fields = ['bio','gender','birthday','relationship_status','first_name','last_name','email','hometown','work','education']
+    
     

@@ -104,34 +104,29 @@
                                     <div class="col-3"><strong>Work:</strong></div>
 
                                     <div class="col-6">
-                                        {% if user.profile.work.all %}
-                                        <ul>
-                                            {% for work in user.profile.work.all %}
-                                            <li>{{work}} {% if not user.profile.work.have_left %} (Current) {%endif%}
-                                            </li>
-                                            {% endfor %}
+                                        {% if user.profile.work %}
+                                        {{ user.profile.work }}
+            
                                             {% else %}
                                             Not Working yet
                                             {% endif %}
+                                    
                                     </div>
-                                    </ul>
+                                    
 
                                 </div>
                                 <div class="row">
                                     <div class="col-3"><strong>Education:</strong></div>
 
                                     <div class="col-6">
-                                        {% if user.profile.education.all %}
-                                        <ul>
-                                            {% for education in user.profile.education.all %}
-                                            <li>{{education}} {% if not user.profile.education.is_complete %} (Currently
-                                                Studying) {%endif%}</li>
-                                            {% endfor %}
+                                        {% if user.profile.education %}
+                                        {{ user.profile.education }}
+            
                                             {% else %}
-                                            Nothing to show
+                                            No School Info
                                             {% endif %}
                                     </div>
-                                    </ul>
+                                   
 
                                 </div>
 
@@ -176,22 +171,34 @@
                                     <div class="row mb-2">
                                         <div class="col-md-6"> 
                                             <label for="firstName" class="form-label"><strong>First Name:</strong></label>
-                                            <input type="text" class="form-control" id="firstName" placeholder="First Name" value={{user.first_name}} name='first_name'>
+                                            <input type="text" class="form-control" id="firstName" placeholder="First Name" value={{user.first_name}} name='first_name' required>
                                           </div>
                                         <div class="col-md-6">
                                             <label for="lastName" class="form-label"><strong>Last Name:</strong></label>
-                                            <input type="text" class="form-control" id="lastName" placeholder="Last Name" value={{user.last_name}} name='last_name'>
+                                            <input type="text" class="form-control" id="lastName" placeholder="Last Name" value={{user.last_name}} name='last_name' required>
                                         
                                         </div>
                                     </div>
                                     <div class="mb-2">
                                         <label for="email" class="form-label"><strong>E-mail Address:</strong></label>
-                                        <input type="text" class="form-control" id="email" placeholder="E-mail Address" value={{user.email}} name='email'>
+                                        <input type="email" class="form-control" id="email" placeholder="E-mail Address" value={{user.email}} name='email' required>
                                         
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="hometown" class="form-label"><strong>Home Town:</strong></label>
+                                        <input type="text" class="form-control" id="hometown" placeholder="Home Town" value={% if request.user.profile.hometown %}{{request.user.profile.hometown}} {% else %} ''{% endif %} name='hometown' required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="education" class="form-label"><strong>Education:</strong></label>
+                                        <input type="text" class="form-control" id="education" placeholder="Education" value={% if request.user.profile.education %}{{request.user.profile.education}} {% else %} ''{% endif %} name='education' required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="work" class="form-label"><strong>Work:</strong></label>
+                                        <input type="text" class="form-control" id="hometown" placeholder="Work" value={% if request.user.profile.work %}{{request.user.profile.work}} {% else %} ''{% endif %} name='work' required>
                                     </div>
                                 <div class="mb-2">
                                     <label for="bio" class="form-label"><strong>Bio:</strong></label>
-                                    <textarea class="form-control" id="bio" rows="2" value="{{user.profile.bio}}" name='bio'>{{user.profile.bio}}</textarea>
+                                    <textarea class="form-control" id="bio" rows="2" value="{{user.profile.bio}}" name='bio'  placeholder="Please Enter Bio" required>{{user.profile.bio}}</textarea>
                                   </div>
                                   
                                   <div class="form-group mb-2">
