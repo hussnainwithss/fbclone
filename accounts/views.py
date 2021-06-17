@@ -1,12 +1,11 @@
 from django.db.utils import IntegrityError
-from user_profile.models import UserProfile
+from user_profile.models import UserProfile,FeedTemplate,Feed
 from django.shortcuts import render,redirect
 from django.views import View
 from django.contrib.auth import authenticate, login,logout,update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from . import managers,models
-
 
 
 # Create your views here.
@@ -44,6 +43,7 @@ class Logout(View):
 
 class Register(View):
     def post(self,request,*args,**kwargs):
+        REGISTERED_FEED_CONTENT = '{full_name} has joined UBook'
         if 'email' in request.session:
             del request.session['email']
         
@@ -63,8 +63,13 @@ class Register(View):
             user = models.CustomUser.objects.create(email=email,first_name=first_name,last_name=last_name,is_active=True)
             user.set_password(password1)
             user_profile = UserProfile.objects.create(user=user,birthday=birthday,gender=gender)
+            REGISTERED_FEED_CONTENT = REGISTERED_FEED_CONTENT.format(full_name=user.get_full_name())
+            register_feed_template = FeedTemplate.objects.create(content=REGISTERED_FEED_CONTENT,feed_type='register')
+            register_feed_object = Feed.objects.create(user=user,feed_template=register_feed_template)
             user.save()
             user_profile.save()
+            register_feed_template.save()
+            register_feed_object.save()
             user = authenticate(request,email=email,password=password1)
             if user is not None and user.is_active:
                 login(request,user)

@@ -2,6 +2,7 @@ import datetime
 from django.db import models
 from django.conf import settings
 from dateutil.relativedelta import relativedelta
+from django.db.models.enums import Choices
 # Create your models here.
 
 
@@ -111,3 +112,31 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.email
+
+
+class FeedTemplate(models.Model):
+    FEED_TYPE_CHOICES=[
+        ('register','register'),
+        ('add_new_photo','add_new_photo'),
+        ('add_new_text','add_new_text'),
+        ('add_new_friend','add_new_friend')
+    ]
+    REGISTER = 'register'
+    ADD_NEW_PHOTO = 'add_new_photo'
+    ADD_NEW_TEXT = 'add_new_text'
+    ADD_NEW_FRIEND = 'add_new_friend'
+    content = models.CharField(max_length=255,blank=True)
+    image = models.ImageField(upload_to='UserProfiles/FeedTemplates',blank=True)
+    feed_type = models.CharField(max_length=15,choices=FEED_TYPE_CHOICES,default=REGISTER)
+
+    def __str__(self):
+        return "{feed_type} | {content}".format(feed_type=self.feed_type,content=self.content)
+
+
+class Feed(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name="feed_user")
+    feed_template = models.ForeignKey(FeedTemplate,on_delete=models.CASCADE,related_name='feed_template')
+
+    def __str__(self):
+        return "{user} @ {feed_template}".format(user=self.user,feed_template=self.feed_template)
