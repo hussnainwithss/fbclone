@@ -6,6 +6,7 @@
 <section>
     <div class="parent">
         <div class="cover-picture image1">
+            {% block user-cover %}
             <img class='img-responsive' src={% if user.profile.cover_picture %} {{user.profile.cover_picture.url}} {%else %} {% static 'images/cover.svg' %} {% endif %} class="d-block w-100" alt="Cover">
                 <a href='#' data-bs-toggle="modal" data-bs-target="#uploadCoverPictureModal">
             
@@ -13,8 +14,11 @@
                     <div class="text">Update Cover Picture</div>
             </div>
             </a>
+            {% endblock %}
+            
         </div>
         <div class="profile-picture image2">
+            {% block user-profile %}
             <img class='img-responsive rounded-circle border border-light border-2' src={% if user.profile.profile_picture %} {{user.profile.profile_picture.url}} {% else %} {%static 'images/user.png' %} {% endif %} class="d-block w-100" alt="Cover">
             <a href='#' data-bs-toggle="modal" data-bs-target="#uploadProfilePictureModal">
                 
@@ -22,17 +26,18 @@
                     <div class="text">Update Profile Picture</div>
             </div>
         </a>
-           
-           
+        {% endblock %}
+            
+           {% block user-name %}
             <span class='profile-text'>{{user.get_full_name}}, {{user.profile.get_age}}</span>
-
+            {% endblock %}
         </div>
 
     </div>
 </section>
 
 <section>
-    <div class='container'>
+    <div class='container profile-body'>
         <div class="row">
             <div class="col-md-4">
                 <div class="accordion" id="userInfo">
@@ -47,11 +52,14 @@
                         <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
                             aria-labelledby="panelsStayOpen-headingOne">
                             <div class="accordion-body">
+                                {% block user-bio %}
                                 {% if user.profile.bio %}
                                     <strong>{{user.profile.bio}}</strong>
+                                
                                 {% else %}
                                     Please Update Your Bio
                                 {% endif %}
+                                {% endblock %}
                             </div>
                         </div>
                     </div>
@@ -66,26 +74,39 @@
                             data-bs-parent="#userInfo">
                             <div class="accordion-body">
                                 <div class="row">
-                                    <div class="col-3"><strong>Birthday:</strong></div>
+                                    <div class="col-4"><strong>Birthday:</strong></div>
 
-                                    <div class="col-6">{{user.profile.birthday}}</div>
+                                    <div class="col-6">
+                                        {% block user-birthday %}
+                                            {{user.profile.birthday}}
+                                        {% endblock %}
+                                    </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-3"><strong>Town:</strong></div>
-                                    <div class="col-6"> {% if user.profile.hometown %}
-                                        {{user.profile.hometown}}
+                                    <div class="col-4"><strong>Home Town:</strong></div>
+                                    <div class="col-6"> 
+                                        {% block user-hometown %}
+                                        {% if user.profile.hometown %}
+                                            {{user.profile.hometown}}
                                         {% else %}
-                                        Hometown Not set
+                                            Hometown Not set
                                         {% endif %}
+                                        {% endblock %}
                                     </div>
 
                                 </div>
                                 <div class="row">
-                                    <div class="col-3"><strong>Gender:</strong></div>
-                                    <div class="col-6"> {{user.profile.gender}}
+                                    <div class="col-4"><strong>Gender:</strong></div>
+                                    <div class="col-6"> 
+                                    {% block user-gender %}
+                                        {{user.profile.gender}}
+                                    {% endblock %}
                                     </div>
 
                                 </div>
+                                {% block user-email %}
+                                {% endblock %}
+                                
 
                             </div>
                         </div>
@@ -97,34 +118,32 @@
                                 Education & Work
                             </button>
                         </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                            data-bs-parent="#userInfo">
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"data-bs-parent="#userInfo">
                             <div class="accordion-body">
                                 <div class="row">
                                     <div class="col-3"><strong>Work:</strong></div>
-
                                     <div class="col-6">
+                                        {% block user-work %}
                                         {% if user.profile.work %}
                                         {{ user.profile.work }}
-            
                                             {% else %}
                                             Not Working yet
                                             {% endif %}
-                                    
+                                        {% endblock %}
                                     </div>
-                                    
-
                                 </div>
                                 <div class="row">
                                     <div class="col-3"><strong>Education:</strong></div>
 
                                     <div class="col-6">
+                                        {% block user-education %}
                                         {% if user.profile.education %}
                                         {{ user.profile.education }}
             
                                             {% else %}
                                             No School Info
                                             {% endif %}
+                                        {% endblock %}
                                     </div>
                                    
 
@@ -145,7 +164,11 @@
                             <div class="accordion-body">
                                 <div class="row">
                                     <div class="col-6"><strong>Relationship Status:</strong></div>
-                                    <div class="col-6"> {{user.profile.relationship_status}}
+                                    
+                                    <div class="col-6"> 
+                                        {% block user-relationship %}
+                                        {{user.profile.relationship_status}}
+                                        {% endblock %}
                                     </div>
 
                                 </div>
@@ -155,6 +178,7 @@
                 </div>
             </div>
             <div class="col-md-8">
+                {% block user-feed %}
                 <div class="accordion" id="userProfileUpdate">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="updateProfile">
@@ -299,6 +323,7 @@
 
                     </div>
                 </div>
+                {% endblock %}
             </div>
         </div>
 

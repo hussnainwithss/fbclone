@@ -1,3 +1,4 @@
+from django import contrib
 from django.contrib import messages
 from django.http import request
 from django.shortcuts import render,redirect
@@ -7,6 +8,7 @@ from django.views import View
 from django.views.generic import TemplateView
 from . import models
 from . import forms
+from accounts.models import CustomUser
 
 # Create your views here.
 
@@ -82,3 +84,26 @@ class UpdateProfileView(LoginRequiredMixin,View):
 
         
 
+class UserFeedView(TemplateView,LoginRequiredMixin):
+    login_url = 'user_profile:index'
+    template_name = 'pages/user_feed.html'
+
+    def get(self,request,user_id,*args,**kwargs):
+        if user_id == request.user.id:
+                return redirect('user_profile:dashboard')
+        context = super(UserFeedView,self).get_context_data(*args,**kwargs)
+        try: 
+            context['feed_user'] = CustomUser.objects.get(id=user_id)
+            if context['feed_user'].is_staff or context['feed_user'].is_superuser:
+                raise CustomUser.DoesNotExist
+        except CustomUser.DoesNotExist:
+            messages.error(request,"User with user_id={} doesnt Exist!".format(user_id))
+            return redirect('user_profile:dashboard')
+        try:
+            context['feed_objects'] = models.Feed.objects.filter(user_id=user_id)
+            print(context['feed_objects'])
+        except:
+            messages.error(request,"Error Loading Feed for this user")
+        return render(request,template_name=self.template_name,context=context)
+    
+    

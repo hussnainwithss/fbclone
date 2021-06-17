@@ -132,10 +132,10 @@ header .btn-header-login{
 
 }
 
-.accordion {
-	padding-top: 60px;
-}
 
+.profile-body{
+	padding-top:60px;
+}
 .overlay {
 	position: absolute;
 	top: 0;

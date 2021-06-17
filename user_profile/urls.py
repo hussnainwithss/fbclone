@@ -10,6 +10,6 @@ urlpatterns = [
     path('update-profile-picture/',views.UpdateProfilePictureView.as_view(),name='update-profile-picture'),
     path('update-cover-picture/',views.UpdateCoverPictureView.as_view(),name='update-cover-picture'),
     path('update-profile/',views.UpdateProfileView.as_view(),name='update-profile'),
-    
+    path('user-feed/<int:user_id>',views.UserFeedView.as_view(),name='user-feed')    
 
 ]

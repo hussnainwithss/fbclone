@@ -1,0 +1,90 @@
+{% extends 'pages/profile.html' %}
+
+{% load static %}
+
+{% block user-cover %}
+<img class='img-responsive' src={% if feed_user.profile.cover_picture %} {{feed_user.profile.cover_picture.url}} {%else%} {% static 'images/cover.svg' %} {% endif %} class="d-block w-100" alt="Cover">
+{% endblock %}
+
+{% block user-profile %}
+<img class='img-responsive rounded-circle border border-light border-2' src={% if feed_user.profile.profile_picture %}
+    {{feed_user.profile.profile_picture.url}} {% else %} {% static 'images/user.png' %} {% endif %}
+    class="d-block w-100" alt="Cover">
+{% endblock %}
+
+{% block user-name %}
+<span class='profile-text'>{{feed_user.get_full_name}}, {{feed_user.profile.get_age}}</span>
+{% endblock %}
+
+
+{% block user-bio %}
+{% if feed_user.profile.bio %}
+<strong>{{feed_user.profile.bio}}</strong>
+
+{% else %}
+Please Update Your Bio
+{% endif %}
+{% endblock %}
+
+{% block user-birthday %}
+{{feed_user.profile.birthday}}
+{% endblock %}
+
+{% block user-hometown %}
+{% if feed_user.profile.hometown %}
+{{feed_user.profile.hometown}}
+{% else %}
+Hometown Not set
+{% endif %}
+{% endblock %}
+
+{% block user-gender %}
+{{feed_user.profile.gender}}
+{% endblock %}
+{% block user-email %}
+<div class="row">
+    <div class="col-4"><strong>Email:</strong></div>
+    <div class="col-6">
+        {{feed_user.email}}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block user-work %}
+{% if feed_user.profile.work %}
+{{ feed_user.profile.work }}
+{% else %}
+Not Working yet
+{% endif %}
+{% endblock %}
+
+ {% block user-education %}
+    {% if feed_user.profile.education %}
+        {{ feed_user.profile.education }}
+            
+    {% else %}
+        No School Info
+    {% endif %}
+{% endblock %}
+
+{% block user-relationship %}
+    {{feed_user.profile.relationship_status}}
+{% endblock %}
+
+
+{% block user-feed %}
+{% for feed_object in feed_objects %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{% if feed_object.feed_template.feed_type == 'register' %}HURRAY!{% endif %}</h5>
+    
+      <p class="card-text">{{feed_object.feed_template.content}}</p>
+      {% if feed_object.feed_template.image %}
+      <img src={{feed_object.feed_template.image.url}} class="card-img-bottom" alt="Feed Image">
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
+
+{% endblock %}
