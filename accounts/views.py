@@ -28,7 +28,7 @@ class Login(View):
             request.session['email'] = email
             messages.error(request,'Incorect Email/Password! Please try again!')
             return  redirect("user_profile:index")
-        return redirect("user_profile:dashboard")
+        return redirect("user_profile:settings")
 
 
 class Logout(View):
@@ -76,7 +76,7 @@ class Register(View):
                 request.session.set_expiry(0)
                 request.session.modified = True
             messages.success(request,"Registration Successful! Welcome {}".format(user.get_full_name()))
-            return redirect('user_profile:dashboard')
+            return redirect('user_profile:settings')
         except IntegrityError:
             messages.warning(request,"User Already Exists Try Logging in!")
             request.session['email'] = email
@@ -97,5 +97,5 @@ class ChangePasswordView(View):
         else:
             messages.error(request, 'Please correct the errors below.')
             messages.error(request,form.errors.as_text())
-        return redirect('user_profile:dashboard')
+        return redirect('user_profile:settings')
         

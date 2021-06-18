@@ -52,16 +52,29 @@
   <header>
       <div class="row align-items-center">
         <div class="col-sm-6">
-          <div class="logo">UBook</div>
+        <div class="row">
+          <div class="col-md-2"> <div class="logo">UBook</div></div>
+          {% if user.is_authenticated and user.profile %}
+          <div class="col-md-7 ">  
+            <form class="d-flex" method="GET">
+            <input class="form-control has-feedback-left" type="search" placeholder="Search UBook" aria-label="Search">
+          </form>
+        </div>
+        {% endif %}
+        </div>
+          
         </div>
         <div class="col-sm-6 ">
           {% block header-content %}
           {% if user.is_authenticated and user.profile %}
           <div class='row float-end'>
-            <div class=" col-md-7 profile-badge">
+           <div class=" col-md-7 profile-badge">
+           <a href={% url 'user_profile:settings' %}>
               <img src={% if user.profile.profile_picture %} {{user.profile.profile_picture.url}} {% else %} {%static 'images/user.png' %} {% endif %} class='rounded-circle '>
               {{user.first_name}}
+              </a>
             </div>
+          
             <div class='col-md-2 form-group'>
               <form action={% url 'accounts:logout' %} method="POST">
                 {% csrf_token %}

@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from . import views
 app_name = 'user_profile'
 urlpatterns = [
-    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
+    path('settings/', views.DashboardView.as_view(), name='settings'),
     path('',views.IndexView.as_view(),name='index'),
     path('update-profile-picture/',views.UpdateProfilePictureView.as_view(),name='update-profile-picture'),
     path('update-cover-picture/',views.UpdateCoverPictureView.as_view(),name='update-cover-picture'),

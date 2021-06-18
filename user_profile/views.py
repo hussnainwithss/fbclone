@@ -17,7 +17,7 @@ class IndexView(View):
     def get(self,request, *args, **kwargs):
         try:
             if request.user.is_authenticated and models.UserProfile.objects.get(user=request.user):
-                return redirect('user_profile:dashboard')
+                return redirect('user_profile:settings')
         except models.UserProfile.DoesNotExist:
             return render(request,'pages/index.html')
         return render(request,'pages/index.html')    
@@ -47,7 +47,7 @@ class UpdateProfilePictureView(LoginRequiredMixin,View):
             messages.success(request,'Profile Picture Updated!')
         else:
             messages.error(request,"Something went wrong!")
-        return redirect('user_profile:dashboard')
+        return redirect('user_profile:settings')
 
 
 class UpdateCoverPictureView(LoginRequiredMixin,View):
@@ -61,7 +61,7 @@ class UpdateCoverPictureView(LoginRequiredMixin,View):
             messages.success(request,'Cover Picture Updated!')
         else:
             messages.error(request,"Something went wrong! ")
-        return redirect('user_profile:dashboard')
+        return redirect('user_profile:settings')
 
 class UpdateProfileView(LoginRequiredMixin,View):
     login_url = 'user_profile:index'
@@ -80,7 +80,7 @@ class UpdateProfileView(LoginRequiredMixin,View):
         else:
             print(form.errors)
             messages.error(request,"Something went wrong! ")
-        return redirect('user_profile:dashboard')
+        return redirect('user_profile:settings')
 
         
 
@@ -90,7 +90,7 @@ class UserFeedView(TemplateView,LoginRequiredMixin):
 
     def get(self,request,user_id,*args,**kwargs):
         if user_id == request.user.id:
-                return redirect('user_profile:dashboard')
+                return redirect('user_profile:settings')
         context = super(UserFeedView,self).get_context_data(*args,**kwargs)
         try: 
             context['feed_user'] = CustomUser.objects.get(id=user_id)
@@ -98,7 +98,7 @@ class UserFeedView(TemplateView,LoginRequiredMixin):
                 raise CustomUser.DoesNotExist
         except CustomUser.DoesNotExist:
             messages.error(request,"User with user_id={} doesnt Exist!".format(user_id))
-            return redirect('user_profile:dashboard')
+            return redirect('user_profile:settings')
         try:
             context['feed_objects'] = models.Feed.objects.filter(user_id=user_id)
             print(context['feed_objects'])
