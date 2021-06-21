@@ -88,7 +88,6 @@ class UpdateProfileView(LoginRequiredMixin,View):
             update_session_auth_hash(request, request.user)
             messages.success(request,'Profile Info Updated Successfully!')
         else:
-            print(form.errors)
             messages.error(request,"Something went wrong! ")
         return redirect('user_profile:settings')
 
@@ -111,7 +110,6 @@ class UserFeedView(TemplateView,LoginRequiredMixin):
             return redirect('user_profile:settings')
         try:
             context['feed_objects'] = models.Feed.objects.filter(user_id=user_id)
-            print(context['feed_objects'])
         except:
             messages.error(request,"Error Loading Feed for this user")
         return render(request,template_name=self.template_name,context=context)
@@ -125,6 +123,10 @@ class SearchView(ListView, LoginRequiredMixin):
         qs = super().get_queryset()
         qs = qs.filter(~Q(is_staff = True) and ~Q(is_superuser = True), ~Q(id=self.request.user.id))
         return qs.filter(Q(first_name__icontains=self.request.GET['search_query']) | Q(last_name__icontains=self.request.GET['search_query']))
+    def get_context_data(self, **kwargs):
+        context= super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET['search_query']
+        return context
         
 
 class CreatePostView(LoginRequiredMixin,View):
@@ -135,13 +137,8 @@ class CreatePostView(LoginRequiredMixin,View):
     def post(self,request,*args,**kwargs):
         form = forms.CreatePostForm(request.POST,request.FILES)
         if form.is_valid():
-            print(form.cleaned_data)
-            print(form.cleaned_data['image'] != None)
             form.cleaned_data['feed_type'] = self.ADD_NEW_PHOTO if form.cleaned_data['image'] != None else self.ADD_NEW_TEXT
-            print(form.cleaned_data['feed_type'])
-            print(form.cleaned_data)
             feed_template = form.save()
-            print(feed_template)
             feed_obj = models.Feed.objects.create(feed_template=feed_template,user=request.user)
             feed_obj.save()
             messages.success(request,"Update Successfully Posted")

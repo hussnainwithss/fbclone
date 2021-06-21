@@ -3,5 +3,53 @@
 {% load static %}
 
 {% block body-content %}
-{{object_list}}
+<div class="container search">
+    <div class="row ">
+        <div class="col-md-3">
+            <div class="card mt-4.5" >
+                <form action="" method="POST">
+
+                </form>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div>
+                <h4> {{object_list|length}} Search Result(s) for {{search_query}}</h4>
+                {% if object_list|length > 0 %}
+                {% for search_result in object_list %}
+                <div class="card ">
+                    <div class="card-body search-result no-decoration">
+                        <a href={% url 'user_profile:user-feed' search_result.id%} >
+                        <div class="row">
+                            <div class="col-auto"><img src={%if search_result.user_profile.profile_image %}{{search_result.user_profile.profile_image}} {% else %} {%static 'images/user.png' %} {% endif %} alt="{{search_result.first_name}}'s profile-picture" class="profile-card img-responsive rounded-circle">
+                            </div>
+                            <div class='col-auto' >
+                                <div class="row ">
+                                    {{search_result.get_full_name}} {% if search_result.profile.hometown %} ,{{search_result.profile.hometown}} {% endif %}
+                                </div>
+                                <div class="row">{{search_result.profile.gender}}, {{ search_result.profile.get_age}}</div>
+                                <div class="row">{% if search_result.profile.education %} {{search_result.profile.education}} 
+                                {%elif search_result.profile.work %} {{search_result.profile.work}} 
+                                {% else %}{{user.profile.relationship_status}}{% endif %}
+                            </div>
+                            </div>
+                        </div>
+                        </a>
+                        
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Nothing to show</h4>
+                    </div>  
+                </div>
+                {% endif %}
+            </div>
+            
+        </div>
+    </div>
+</div>
+
 {% endblock %}
