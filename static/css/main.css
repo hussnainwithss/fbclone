@@ -73,7 +73,7 @@ header .btn-header-login{
 
 
 
-.profile-badge > a{
+.profile-badge > a, .logo > a{
 	text-decoration: none;
 	color: white;
 }
