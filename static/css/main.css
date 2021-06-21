@@ -179,3 +179,22 @@ header .btn-header-login{
   .password-reset-card{
 	margin-top: 100px
   }
+
+
+.post-text{
+	resize: none;
+	border: none;
+}
+
+.post-text::placeholder{
+	font-size: 25px;
+}
+
+.post-text:valid{
+	background: rgb(248, 246, 246);
+}
+
+.card-img-bottom{
+	max-height: 400px;
+	max-width: 800px;
+}

@@ -5,10 +5,12 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView,ListView
+from django.db.models import Q
+from accounts.models import CustomUser
 from . import models
 from . import forms
-from accounts.models import CustomUser
+
 
 # Create your views here.
 
@@ -17,24 +19,32 @@ class IndexView(View):
     def get(self,request, *args, **kwargs):
         try:
             if request.user.is_authenticated and models.UserProfile.objects.get(user=request.user):
-                return redirect('user_profile:settings')
+                return redirect('user_profile:dashboard')
         except models.UserProfile.DoesNotExist:
             return render(request,'pages/index.html')
         return render(request,'pages/index.html')    
 
 
-class DashboardView(LoginRequiredMixin,TemplateView):
+class SettingsView(LoginRequiredMixin,TemplateView):
     template_name = 'pages/profile.html'
     login_url = 'user_profile:index'
     
     
+class DashboardView(LoginRequiredMixin,TemplateView):
+    template_name = 'pages/dashboard.html'
+    login_url = 'user_profile:index'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['feed_objects'] = models.Feed.objects.filter(user_id=self.request.user.id)
+        return context
+
+   
 class ProfileUpdateView(LoginRequiredMixin, TemplateView):
     login_url = 'user_profile:index'
     template_name = 'pages/update_profile.html'
 
-    def post(self,request,*args,**kwargs):
-        pass
-
+    
 
 class UpdateProfilePictureView(LoginRequiredMixin,View):
     login_url = 'user_profile:index'
@@ -106,4 +116,36 @@ class UserFeedView(TemplateView,LoginRequiredMixin):
             messages.error(request,"Error Loading Feed for this user")
         return render(request,template_name=self.template_name,context=context)
     
-    
+
+class SearchView(ListView, LoginRequiredMixin):
+    login_url = 'user_profile:index'
+    template_name = 'pages/search.html'
+    model = CustomUser
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(~Q(is_staff = True) and ~Q(is_superuser = True), ~Q(id=self.request.user.id))
+        return qs.filter(Q(first_name__icontains=self.request.GET['search_query']) | Q(last_name__icontains=self.request.GET['search_query']))
+        
+
+class CreatePostView(LoginRequiredMixin,View):
+    login_url = 'user_profile:index'
+    ADD_NEW_PHOTO = 'add_new_photo'
+    ADD_NEW_TEXT = 'add_new_text'
+
+    def post(self,request,*args,**kwargs):
+        form = forms.CreatePostForm(request.POST,request.FILES)
+        if form.is_valid():
+            print(form.cleaned_data)
+            print(form.cleaned_data['image'] != None)
+            form.cleaned_data['feed_type'] = self.ADD_NEW_PHOTO if form.cleaned_data['image'] != None else self.ADD_NEW_TEXT
+            print(form.cleaned_data['feed_type'])
+            print(form.cleaned_data)
+            feed_template = form.save()
+            print(feed_template)
+            feed_obj = models.Feed.objects.create(feed_template=feed_template,user=request.user)
+            feed_obj.save()
+            messages.success(request,"Update Successfully Posted")
+        else:
+            messages.warning(request,'something went wrong try again')
+        return redirect('user_profile:dashboard')
+        

@@ -75,13 +75,13 @@ Not Working yet
 
 {% block user-feed %}
 {% for feed_object in feed_objects %}
-<div class="card">
+<div class="card mb-3">
     <div class="card-body">
         <h5 class="card-title">{% if feed_object.feed_template.feed_type == 'register' %}HURRAY!{% endif %}</h5>
     
       <p class="card-text">{{feed_object.feed_template.content}}</p>
       {% if feed_object.feed_template.image %}
-      <img src={{feed_object.feed_template.image.url}} class="card-img-bottom" alt="Feed Image">
+      <img src={{feed_object.feed_template.image.url}} class="card-img-bottom img-responsive" alt="Feed Image">
       {% endif %}
     </div>
   </div>
