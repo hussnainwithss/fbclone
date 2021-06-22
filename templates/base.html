@@ -61,14 +61,14 @@
           {% block header-content %}
           {% if user.is_authenticated and user.profile %}
           <div class='row float-end'>
-           <div class=" col-md-7 profile-badge">
+           <div class=" col-auto profile-badge">
            <a href={% url 'user_profile:settings' %}>
               <img src={% if user.profile.profile_picture %} {{user.profile.profile_picture.url}} {% else %} {%static 'images/user.png' %} {% endif %} class='rounded-circle '>
               {{user.first_name}}
               </a>
             </div>
           
-            <div class='col-md-2 form-group'>
+            <div class='col-auto form-group'>
               <form action={% url 'accounts:logout' %} method="POST">
                 {% csrf_token %}
                 <input type="submit" value="Logout" class="btn  btn-danger">
@@ -128,6 +128,7 @@
     integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
     crossorigin="anonymous"></script>
     <!-- Jquery -->
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
   {% endblock javascript %}

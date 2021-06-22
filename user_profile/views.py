@@ -1,12 +1,14 @@
+import json
 from django import contrib
 from django.contrib import messages
-from django.http import request
+from django.core import serializers
+from django.http import request,JsonResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.views import View
 from django.views.generic import TemplateView,ListView
-from django.db.models import Q
+from django.db.models import Q, query_utils
 from accounts.models import CustomUser
 from . import models
 from . import forms
@@ -118,15 +120,52 @@ class UserFeedView(TemplateView,LoginRequiredMixin):
 class SearchView(ListView, LoginRequiredMixin):
     login_url = 'user_profile:index'
     template_name = 'pages/search.html'
-    model = CustomUser
+    model = models.UserProfile
+
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.filter(~Q(is_staff = True) and ~Q(is_superuser = True), ~Q(id=self.request.user.id))
-        return qs.filter(Q(first_name__icontains=self.request.GET['search_query']) | Q(last_name__icontains=self.request.GET['search_query']))
+        qs = qs.filter(~Q(user__is_staff = True) and ~Q(user__is_superuser = True), ~Q(user__id=self.request.user.id))
+        query = self.request.GET.get('search_query',None) if self.request.GET.get('search_query',None) else self.request.POST.get('search_query',None)
+        
+        return qs.filter(Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query))
+    
     def get_context_data(self, **kwargs):
         context= super().get_context_data(**kwargs)
-        context['search_query'] = self.request.GET['search_query']
+        context['search_query'] = self.request.GET['search_query'] if self.request.GET['search_query'] else self.request.POST['search_query']
+        context['hometowns'] = self.get_queryset().filter(~Q(hometown='')).values_list('hometown',flat=True).distinct()
+        context['works'] = self.get_queryset().filter(~Q(work='')).values_list('work',flat=True).distinct()
+        context['educations'] = self.get_queryset().filter(~Q(education='')).values_list('education',flat=True).distinct()
         return context
+    
+    def post(self,request, *args, **kwargs):
+        if self.request.is_ajax:
+            search_filters = {}
+            search_filters['education'] = self.request.POST.get('education',None)
+            search_filters['work'] = self.request.POST.get('work',None)
+            search_filters['hometown'] = self.request.POST.get('hometown',None)
+            search_filters['gender'] = self.request.POST.get('gender',None)
+            search_filters['relationship_status'] = self.request.POST.get('relationship_status',None)
+            try:
+                search_filters = {k: v for k, v in search_filters.items() if v is not None}
+                print(search_filters)
+                qs = self.get_queryset()
+                print(qs)
+                qs = qs.filter(**search_filters)
+                response = serializers.serialize('json',qs)
+                response = json.loads(response)
+                
+                for obj in response:
+                    obj['fields']['user'] =  {
+                        'id' : obj['fields']['user'],
+                        'name':CustomUser.objects.get(id=obj['fields']['user']).get_full_name()
+                    }
+                    obj['fields']['age'] = qs.get(id=obj['pk']).get_age()
+                response = json.dumps(response)
+                print(response)
+                return JsonResponse({"response": response}, status=200)
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=400)
+        return JsonResponse({"error": ""}, status=400)
         
 
 class CreatePostView(LoginRequiredMixin,View):
