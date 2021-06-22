@@ -221,3 +221,11 @@ header .btn-header-login{
 .search-filter{
 	margin-top: 38px;
 }
+
+.card-img-bottom {
+	object-fit: contain;
+}
+
+.cover-picture > img {
+	object-fit: cover;
+}
