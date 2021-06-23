@@ -22,7 +22,7 @@ class IndexView(View):
     main index page with signin and signup options
     """
     def get(self,request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.profile:
+        if request.user.is_authenticated and hasattr(request.user, 'profile'):
                 return redirect('user_profile:dashboard')
         return render(request,'pages/index.html')
 
