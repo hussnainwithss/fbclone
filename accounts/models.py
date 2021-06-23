@@ -17,15 +17,14 @@ class CustomUser(AbstractUser):
         to make email the username field
     """
     username = None
-    email = models.EmailField('email address', unique=True,error_messages={
-            'unique': "A user with that email already exists.",
-        },)
+    email = models.EmailField('email address', unique=True, error_messages={
+        'unique': "A user with that email already exists.",
+    },)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
-
 
     def __str__(self):
         return self.email

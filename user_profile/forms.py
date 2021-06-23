@@ -3,30 +3,36 @@ from django.forms import fields
 from django.http import request
 from . import models, views
 
+
 class ProfilePictureForm(forms.ModelForm):
     class Meta:
         model = models.UserProfile
         fields = ['profile_picture']
-    
+
+
 class CoverPictureForm(forms.ModelForm):
     class Meta:
         model = models.UserProfile
         fields = ['cover_picture']
 
+
 class ProfileUpdate(forms.ModelForm):
     first_name = forms.CharField(max_length=255)
     last_name = forms.CharField(max_length=255)
     email = forms.EmailField()
+
     class Meta:
         model = models.UserProfile
-        fields = ['bio','gender','birthday','relationship_status','first_name','last_name','email','hometown','work','education']
-    
+        fields = ['bio', 'gender', 'birthday', 'relationship_status',
+                  'first_name', 'last_name', 'email', 'hometown', 'work', 'education']
+
 
 class CreatePostForm(forms.ModelForm):
-    feed_type = forms.CharField(initial='add_new_text',required=False)
+    feed_type = forms.CharField(initial='add_new_text', required=False)
+
     class Meta:
         model = models.FeedTemplate
-        fields = ['content','image','feed_type']
+        fields = ['content', 'image', 'feed_type']
 
     def clean_feed_type(self):
         feed_type = self.cleaned_data.get('feed_type')
@@ -35,4 +41,3 @@ class CreatePostForm(forms.ModelForm):
         if self.cleaned_data['image']:
             feed_type = 'add_new_photo'
         return feed_type
-        

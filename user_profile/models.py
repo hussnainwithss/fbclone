@@ -21,8 +21,6 @@ from dateutil.relativedelta import relativedelta
 #         unique_together = ['id','name']
 
 
-
-
 # class Organization(models.Model):
 #     name = models.CharField(max_length=255)
 #     city = models.ForeignKey(City, on_delete=models.CASCADE)
@@ -46,11 +44,11 @@ from dateutil.relativedelta import relativedelta
 
 #     def save(self, *args, **kwargs):
 #         self.degree = self.degree.lower()
-#         self.field = self.field.lower() 
+#         self.field = self.field.lower()
 #         return super(Education, self).save(*args, **kwargs)
 
 #     def __str__(self):
-#         return "{degree} ({field}) @ {school}".format(degree=self.degree.upper(), 
+#         return "{degree} ({field}) @ {school}".format(degree=self.degree.upper(),
 #         field=self.field.title(), school=self.school.name.title())
 
 #     class Meta:
@@ -68,7 +66,7 @@ from dateutil.relativedelta import relativedelta
 
 #     def __str__(self):
 #         return "{designation} @ {org}".format(designation=self.designation.title(), org=self.organization)
-    
+
 #     class Meta:
 #         unique_together = ['organization','designation','have_left']
 
@@ -95,21 +93,23 @@ class UserProfile(models.Model):
     GENDER_CHOICES = [
         ('Female', 'Female'),
         ('Male', 'Male'),
-        ('Others','Others')
+        ('Others', 'Others')
     ]
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name="profile")
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     bio = models.CharField(max_length=255, blank=True)
-    profile_picture = models.ImageField(upload_to='UserProfiles',blank=True)
-    cover_picture = models.ImageField(upload_to='UserProfiles',blank=True)
-   
+    profile_picture = models.ImageField(upload_to='UserProfiles', blank=True)
+    cover_picture = models.ImageField(upload_to='UserProfiles', blank=True)
+
     education = models.CharField(max_length=255, blank=True)
-    work = models.CharField(max_length=255,blank=True)
+    work = models.CharField(max_length=255, blank=True)
     birthday = models.DateField()
-    hometown = models.CharField(max_length=255,blank=True)
-    gender = models.CharField(choices=GENDER_CHOICES,max_length=6,default=FEMALE)
+    hometown = models.CharField(max_length=255, blank=True)
+    gender = models.CharField(choices=GENDER_CHOICES,
+                              max_length=6, default=FEMALE)
     relationship_status = models.CharField(
         choices=RELATIONSHIP_STATUS_CHOICES, max_length=10, default=SINGLE)
+
     def get_age(self):
         return relativedelta(datetime.date.today(), self.birthday).years
 
@@ -122,22 +122,24 @@ class FeedTemplate(models.Model):
     FeedTemplate species the format of each feed object
 
     """
-    FEED_TYPE_CHOICES=[
-        ('register','register'),
-        ('add_new_photo','add_new_photo'),
-        ('add_new_text','add_new_text'),
-        ('add_new_friend','add_new_friend')
+    FEED_TYPE_CHOICES = [
+        ('register', 'register'),
+        ('add_new_photo', 'add_new_photo'),
+        ('add_new_text', 'add_new_text'),
+        ('add_new_friend', 'add_new_friend')
     ]
     REGISTER = 'register'
     ADD_NEW_PHOTO = 'add_new_photo'
     ADD_NEW_TEXT = 'add_new_text'
     ADD_NEW_FRIEND = 'add_new_friend'
-    content = models.CharField(max_length=255,blank=True)
-    image = models.ImageField(upload_to='UserProfiles/FeedTemplates',blank=True)
-    feed_type = models.CharField(max_length=15,choices=FEED_TYPE_CHOICES,default=REGISTER)
+    content = models.CharField(max_length=255, blank=True)
+    image = models.ImageField(
+        upload_to='UserProfiles/FeedTemplates', blank=True)
+    feed_type = models.CharField(
+        max_length=15, choices=FEED_TYPE_CHOICES, default=REGISTER)
 
     def __str__(self):
-        return "{feed_type} | {content}".format(feed_type=self.feed_type,content=self.content)
+        return "{feed_type} | {content}".format(feed_type=self.feed_type, content=self.content)
 
 
 class Feed(models.Model):
@@ -145,9 +147,9 @@ class Feed(models.Model):
     FeedModel species which feed_template belongs to which user
     """
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name="feed_user")
-    feed_template = models.ForeignKey(FeedTemplate,on_delete=models.CASCADE,related_name='feed_template')
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="feed_user")
+    feed_template = models.ForeignKey(
+        FeedTemplate, on_delete=models.CASCADE, related_name='feed_template')
 
     def __str__(self):
-        return "{user} @ {feed_template}".format(user=self.user,feed_template=self.feed_template)
-        
+        return "{user} @ {feed_template}".format(user=self.user, feed_template=self.feed_template)

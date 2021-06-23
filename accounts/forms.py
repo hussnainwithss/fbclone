@@ -15,6 +15,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ('email',)
+
     def clean_first_name(self):
         """Called by form on validating form data
         also provides the calling view with firstname
@@ -56,6 +57,7 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
         fields = ('email',)
+
     def clean_first_name(self):
         """Called by form on validating form data
         also provides the calling view with firstname

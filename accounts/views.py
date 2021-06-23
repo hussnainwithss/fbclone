@@ -65,6 +65,7 @@ class Register(View):
     to the dashboard else redirects back to
     signup page
     """
+
     def post(self, request, *args, **kwargs):
         registered_feed_content = '{full_name} has joined UBook'
         if 'email' in request.session:
@@ -127,6 +128,7 @@ class ChangePasswordView(View):
     recommutes and updates session hash so that user
     isnt logged out
     """
+
     def post(self, request, *args, **kwargs):
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
