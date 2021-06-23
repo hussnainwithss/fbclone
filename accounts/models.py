@@ -1,6 +1,11 @@
+"""
+    Module contains Custom User Model
+    for Django App. it extends the base UserModel
+    to make email the mandatory and username field
+"""
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.contrib.auth.validators import UnicodeUsernameValidator
 
 
 from .managers import CustomUserManager
@@ -9,8 +14,7 @@ from .managers import CustomUserManager
 class CustomUser(AbstractUser):
     """
         Custom User Class that overrides the AbstractUser class
-        to make email the username field and making username first part 
-        of email
+        to make email the username field
     """
     username = None
     email = models.EmailField('email address', unique=True,error_messages={
@@ -22,6 +26,6 @@ class CustomUser(AbstractUser):
 
     objects = CustomUserManager()
 
-    
+
     def __str__(self):
         return self.email

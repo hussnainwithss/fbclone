@@ -75,10 +75,11 @@
                                 <label for="relationship-status" class='mb-2'><strong>Relationship Status:</strong></label>
                                     
                                     <select class="form-select" id='relationship-status' name='relationship_status'>
-                                        <option {% if user.profile.relationship_status == 'Single'%} selected {% endif %} value="Single">Single</option>
-                                        <option {% if user.profile.relationship_status == 'Committed'%} selected {% endif %} value="Committed">Committed</option>
-                                        <option {% if user.profile.relationship_status == 'Married'%} selected {% endif %}value="Married">Married</option>
-                                        <option {% if user.profile.relationship_status == 'Divorced'%} selected {% endif %}value="Divorced">Divorced</option>
+                                    <option selected disabled> Select Relationship Status</option>
+                                        <option  value="Single">Single</option>
+                                        <option  value="Committed">Committed</option>
+                                        <option value="Married">Married</option>
+                                        <option value="Divorced">Divorced</option>
                                         
                                       </select>
                             </div>
@@ -146,6 +147,9 @@
     */
     var original_data;
     var original_count;
+    original_data = $('#searchCards')[0].cloneNode(true);
+    original_count = $("#resultCount").text();
+      
     var search_query = $("<input>")
         .attr("type", "hidden")
         .attr("name", "search_query").val($('#searchQuery').text());
@@ -155,8 +159,6 @@
       // preventing from page reload and default actions
       e.preventDefault();
       const csrftoken = Cookies.get('csrftoken');
-      original_data = $('#searchCards')[0].cloneNode(true);
-      original_count = $("#resultCount").text();
       // serialize the data for sending the form data.
       let search_card = $("")
       

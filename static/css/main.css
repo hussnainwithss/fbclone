@@ -226,6 +226,6 @@ header .btn-header-login{
 	object-fit: contain;
 }
 
-.cover-picture > img {
+.cover-picture > img,.profile-picture>img {
 	object-fit: cover;
 }

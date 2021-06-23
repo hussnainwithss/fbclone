@@ -1,54 +1,73 @@
 import json
-from django import contrib
 from django.contrib import messages
 from django.core import serializers
-from django.http import request,JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.views import View
 from django.views.generic import TemplateView,ListView
-from django.db.models import Q, query_utils
+from django.db.models import Q
 from accounts.models import CustomUser
-from . import models
-from . import forms
+from . import models,forms
 
 
 # Create your views here.
 
 
 class IndexView(View):
+    """Main Index View that renders the 
+    index page. if user is already logged in 
+    they are redirected to dashboard else to
+    main index page with signin and signup options
+    """
     def get(self,request, *args, **kwargs):
-        try:
-            if request.user.is_authenticated and models.UserProfile.objects.get(user=request.user):
+        if request.user.is_authenticated and request.user.profile:
                 return redirect('user_profile:dashboard')
-        except models.UserProfile.DoesNotExist:
-            return render(request,'pages/index.html')
-        return render(request,'pages/index.html')    
-
+        return render(request,'pages/index.html')
 
 class SettingsView(LoginRequiredMixin,TemplateView):
+    """
+    Settings Views Extends the Template view
+    and renders the user settings update page
+    Login is required to change user settings hence
+    LoginRequiredMixin
+    """
     template_name = 'pages/profile.html'
     login_url = 'user_profile:index'
     
-    
 class DashboardView(LoginRequiredMixin,TemplateView):
+    """
+    Dashboard Views Extends the Template view
+    and renders the main dashboard for logged in user
+    with user's feed and basic info
+    Login is required henceLoginRequiredMixin
+    """
     template_name = 'pages/dashboard.html'
     login_url = 'user_profile:index'
     
     def get_context_data(self, **kwargs):
+        """
+        Overridden get_context_data method
+        to include the original context data
+        as well as the user feed objects
+        which will be displayed
+        P.S. Can be better implemented using a ListView
+        rather than a templateView
+        """
         context = super().get_context_data(**kwargs)
         context['feed_objects'] = models.Feed.objects.filter(user_id=self.request.user.id)
         return context
 
-   
-class ProfileUpdateView(LoginRequiredMixin, TemplateView):
-    login_url = 'user_profile:index'
-    template_name = 'pages/update_profile.html'
 
-    
 
 class UpdateProfilePictureView(LoginRequiredMixin,View):
+    """
+    Update ProfilePicture View 
+    for updating user profile picture
+    accepts only POST requests
+    uses ProfilePictureForm that handles the update
+    """
     login_url = 'user_profile:index'
 
     def post(self,request,*args,**kwargs):
@@ -63,6 +82,12 @@ class UpdateProfilePictureView(LoginRequiredMixin,View):
 
 
 class UpdateCoverPictureView(LoginRequiredMixin,View):
+    """
+    Update CoverPicture View 
+    for updating user Cover picture
+    accepts only POST requests
+    uses ProfileCoverForm that handles the update
+    """
     login_url = 'user_profile:index'
 
     def post(self,request,*args,**kwargs):
@@ -76,6 +101,13 @@ class UpdateCoverPictureView(LoginRequiredMixin,View):
         return redirect('user_profile:settings')
 
 class UpdateProfileView(LoginRequiredMixin,View):
+    """
+    Update user Profile View 
+    for updating user profile 
+    (proerties such as bio, education etc)
+    accepts only POST requests
+    uses ProfileUpdateform that handles the update
+    """
     login_url = 'user_profile:index'
 
     def post(self,request,*args,**kwargs):
@@ -96,12 +128,19 @@ class UpdateProfileView(LoginRequiredMixin,View):
         
 
 class UserFeedView(TemplateView,LoginRequiredMixin):
+    """
+    User Feed View that renders the user feed
+    Only supports get request
+    takes the user id as argument and return and renders
+    feed objects for that user
+    ]
+    """
     login_url = 'user_profile:index'
     template_name = 'pages/user_feed.html'
 
     def get(self,request,user_id,*args,**kwargs):
         if user_id == request.user.id:
-                return redirect('user_profile:settings')
+            return redirect('user_profile:settings')
         context = super(UserFeedView,self).get_context_data(*args,**kwargs)
         try: 
             context['feed_user'] = CustomUser.objects.get(id=user_id)
@@ -112,12 +151,18 @@ class UserFeedView(TemplateView,LoginRequiredMixin):
             return redirect('user_profile:settings')
         try:
             context['feed_objects'] = models.Feed.objects.filter(user_id=user_id)
-        except:
+        except Exception:
             messages.error(request,"Error Loading Feed for this user")
         return render(request,template_name=self.template_name,context=context)
     
 
 class SearchView(ListView, LoginRequiredMixin):
+    """
+    User Search View
+    Inherits from ListView and LoginRequiredMixin
+    supports both get and post request
+    the post request is an ajax call
+    """
     login_url = 'user_profile:index'
     template_name = 'pages/search.html'
     model = models.UserProfile
@@ -165,10 +210,16 @@ class SearchView(ListView, LoginRequiredMixin):
                 return JsonResponse({"response": response}, status=200)
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=400)
-        return JsonResponse({"error": ""}, status=400)
+        return JsonResponse({"error": "Invalid request"}, status=400)
         
 
 class CreatePostView(LoginRequiredMixin,View):
+    """
+    CreatePostView Handles post creation by user
+    Login is required
+    currently two types of posts are supported
+    only supports post method
+    """
     login_url = 'user_profile:index'
     ADD_NEW_PHOTO = 'add_new_photo'
     ADD_NEW_TEXT = 'add_new_text'
@@ -176,7 +227,11 @@ class CreatePostView(LoginRequiredMixin,View):
     def post(self,request,*args,**kwargs):
         form = forms.CreatePostForm(request.POST,request.FILES)
         if form.is_valid():
-            form.cleaned_data['feed_type'] = self.ADD_NEW_PHOTO if form.cleaned_data['image'] != None else self.ADD_NEW_TEXT
+            # if form.cleaned_data['image']:
+            #     print("here")
+            #     form.cleaned_data['feed_type'] = self.ADD_NEW_PHOTO
+            # else:
+            #     form.cleaned_data['feed_type'] = self.ADD_NEW_TEXT
             feed_template = form.save()
             feed_obj = models.Feed.objects.create(feed_template=feed_template,user=request.user)
             feed_obj.save()

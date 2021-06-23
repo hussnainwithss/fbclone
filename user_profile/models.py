@@ -2,7 +2,6 @@ import datetime
 from django.db import models
 from django.conf import settings
 from dateutil.relativedelta import relativedelta
-from django.db.models.enums import Choices
 # Create your models here.
 
 
@@ -75,6 +74,10 @@ from django.db.models.enums import Choices
 
 
 class UserProfile(models.Model):
+    """
+    UserProfile Model 
+    for handling profile information for the site users
+    """
     SINGLE = 'Single'
     COMMITTED = 'Committed'
     MARRIED = 'Married'
@@ -115,6 +118,10 @@ class UserProfile(models.Model):
 
 
 class FeedTemplate(models.Model):
+    """
+    FeedTemplate species the format of each feed object
+
+    """
     FEED_TYPE_CHOICES=[
         ('register','register'),
         ('add_new_photo','add_new_photo'),
@@ -134,9 +141,13 @@ class FeedTemplate(models.Model):
 
 
 class Feed(models.Model):
+    """
+    FeedModel species which feed_template belongs to which user
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name="feed_user")
     feed_template = models.ForeignKey(FeedTemplate,on_delete=models.CASCADE,related_name='feed_template')
 
     def __str__(self):
         return "{user} @ {feed_template}".format(user=self.user,feed_template=self.feed_template)
+        

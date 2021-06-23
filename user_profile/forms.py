@@ -29,8 +29,10 @@ class CreatePostForm(forms.ModelForm):
         fields = ['content','image','feed_type']
 
     def clean_feed_type(self):
-        if not self['feed_type'].html_name in self.data:
-            return self.fields['feed_type'].initial
-        if self['image'] in self.data:
-            return 'add_new_photo'
-        return self.cleaned_data['feed_type']
+        feed_type = self.cleaned_data.get('feed_type')
+        if feed_type == '':
+            feed_type = 'add_new_text'
+        if self.cleaned_data['image']:
+            feed_type = 'add_new_photo'
+        return feed_type
+        
