@@ -24,12 +24,13 @@ READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(BASE_DIR / ".env"))
-   
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str('SECRET_KEY','django-insecure-=sp+74!u@y%m12f60ff#h*6vc8kevv_p@0pb8s@y$b+ipw7tgy')
+SECRET_KEY = env.str(
+    'SECRET_KEY', 'django-insecure-=sp+74!u@y%m12f60ff#h*6vc8kevv_p@0pb8s@y$b+ipw7tgy')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -46,9 +47,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'fontawesome_free',
+    'rest_framework',
+    'rest_framework.authtoken',
     'user_profile.apps.UserProfileConfig',
     'accounts.apps.AccountsConfig',
-    'fontawesome_free'
+    'apis.apps.ApisConfig'
 ]
 
 MIDDLEWARE = [
@@ -152,3 +156,9 @@ MESSAGE_TAGS = {
 AUTH_USER_MODEL = 'accounts.CustomUser'
 LOGIN_URL = 'user_profile:index'
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
