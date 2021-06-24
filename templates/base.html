@@ -50,7 +50,7 @@
           {% if user.is_authenticated and user.profile %}
           <div class="col-md-7 ">  
             <form class="d-flex" method="GET" action={% url 'user_profile:search' %}>
-            <input class="form-control has-feedback-left" type="search" placeholder="Search UBook" aria-label="Search" name='search_query'>
+            <input class="form-control has-feedback-left" type="search" placeholder="Search UBook" aria-label="Search" name='search_query' required>
           </form>
         </div>
         {% endif %}
