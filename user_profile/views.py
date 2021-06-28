@@ -194,19 +194,22 @@ class SearchView(ListView, LoginRequiredMixin):
 
     def get_context_data(self, **kwargs):
         """
-        Method to add additional context data 
+        Method to add additional context data
         for the side filters
         we only wanna include values that are present in the search results
         to be present in the filters hence these filtering
         """
+        queryset = self.get_queryset().values_list(
+            'hometown', 'work', 'education').distinct()[1:]
         context = super().get_context_data(**kwargs)
         context['search_query'] = self.request.GET['search_query']
-        context['hometowns'] = self.get_queryset().filter(
-            ~Q(hometown='')).values_list('hometown', flat=True).distinct()
-        context['works'] = self.get_queryset().filter(
-            ~Q(work='')).values_list('work', flat=True).distinct()
-        context['educations'] = self.get_queryset().filter(
-            ~Q(education='')).values_list('education', flat=True).distinct()
+        context['hometowns'] = []
+        context['educations'] = []
+        context['works'] = []
+        for (hometown, work, education) in queryset:
+            context['hometowns'].append(hometown)
+            context['works'].append(work)
+            context['educations'].append(education)
         return context
 
     def post(self, request, *args, **kwargs):
