@@ -5,9 +5,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env.str('DATABASE_NAME'),
         'USER': env('DATABASE_USER'),
-        'PASSWORD': env('DATABASE_PASSWORD',default=''),
-        'HOST': env('DATABASE_HOST',default='localhost'),
-        'PORT': env('DATABASE_PORT',default='5432'),
+        'PASSWORD': env('DATABASE_PASSWORD', default=''),
+        'HOST': env('DATABASE_HOST', default='localhost'),
+        'PORT': env('DATABASE_PORT', default='5432'),
     }
 }
 
@@ -19,4 +19,5 @@ DATABASES = {
 # EMAIL_USE_TLS = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = BASE_DIR /'tmp/app-messages' # change this to a proper location
+# change this to a proper location
+EMAIL_FILE_PATH = BASE_DIR / 'tmp/app-messages'

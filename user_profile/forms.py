@@ -1,7 +1,5 @@
 from django import forms
-from django.forms import fields
-from django.http import request
-from . import models, views
+from user_profile import models
 
 
 class ProfilePictureForm(forms.ModelForm):

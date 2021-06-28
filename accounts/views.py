@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from user_profile.models import UserProfile, FeedTemplate, Feed
-from . import managers, models
+from accounts import managers, models
 
 
 # Create your views here.

@@ -2,7 +2,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
-from . import views
+from user_profile import views
 app_name = 'user_profile'
 urlpatterns = [
     path('settings/', views.SettingsView.as_view(), name='settings'),

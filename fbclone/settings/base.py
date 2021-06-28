@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'fontawesome_free',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     'user_profile.apps.UserProfileConfig',
     'accounts.apps.AccountsConfig',
     'apis.apps.ApisConfig'
@@ -159,6 +160,7 @@ LOGIN_URL = 'user_profile:index'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ]
+        'rest_framework.authentication.TokenAuthentication'
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
