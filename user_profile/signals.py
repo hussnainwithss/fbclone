@@ -7,7 +7,7 @@ from user_profile.models import UserProfile, FeedTemplate, Feed
 def create_registration_post(sender, instance, created, **kwargs):
     if created:
         feed_template = FeedTemplate.objects.create(
-            feed_type='register', content='{full_name} has joined UBook'.format(instance.user.first_name))
+            feed_type='register', content='{} has joined UBook'.format(instance.user.first_name))
         feed_template.save()
         feed_obj = Feed.objects.create(
             user=instance.user, feed_template=feed_template)

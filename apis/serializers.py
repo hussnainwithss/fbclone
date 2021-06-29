@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from accounts.models import CustomUser
 from datetime import date
 from rest_framework import serializers
@@ -15,7 +16,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         ('Male', 'Male'),
         ('Others', 'Others')
     ]
-    gender = serializers.ChoiceField(choices=GENDER_CHOICES, required=True)
+    gender = serializers.ChoiceField(
+        choices=GENDER_CHOICES, required=True)
     birthday = serializers.DateField(required=True)
     confirm_password = serializers.CharField(write_only=True, required=True)
 
@@ -56,21 +58,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             )
         return attrs
 
-    def create(self, validated_data, *args, **kwargs):
-        user_gender = validated_data.pop('gender')
-        user_birthday = validated_data.pop('birthday')
-        user = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password']
-        )
-        user.first_name = validated_data['first_name']
-        user.last_name = validated_data['last_name']
-        user.save()
-        user_profile = UserProfile.objects.create(
-            user=user, gender=user_gender, birthday=user_birthday)
-        user_profile.save()
-        return user
-
 
 class UserPasswordChangeSerializer(serializers.Serializer):
     current_password = serializers.CharField(write_only=True, required=True)
@@ -98,7 +85,6 @@ class UserPasswordChangeSerializer(serializers.Serializer):
         return value
 
     def validate_new_password(self, value):
-        print(self.initial_data)
         validate_password(value)
         return value
 
@@ -160,7 +146,8 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
                 'required': False
             },
             'email': {
-                'required': False
+                'required': False,
+                'validators': [UniqueValidator(queryset=User.objects.all(), message='User with this email already exists')]
             },
             'profile': {
                 'required': False
@@ -174,7 +161,6 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
             'last_name', instance.last_name)
         instance.email = validated_data.get('email', instance.email)
         instance.save()
-        print(validated_data)
         if validated_data.get('profile', None):
             user_profile_data = validated_data.pop('profile')
             user_profile = instance.profile
@@ -186,6 +172,8 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
             user_profile.education = user_profile_data.get(
                 'education', user_profile.education)
             user_profile.bio = user_profile_data.get('bio', user_profile.bio)
+            user_profile.hometown = user_profile_data.get(
+                'hometown', user_profile.hometown)
             user_profile.birthday = user_profile_data.get(
                 'birthday', user_profile.birthday)
             user_profile.relationship_status = user_profile_data.get(
@@ -214,9 +202,15 @@ class FeedTemplateSerializer(serializers.ModelSerializer):
                 'read_only': True
             },
             'content': {
-                'required': True
+                'required': False
             },
         }
+
+    def validate(self, attrs):
+        if not attrs.get('content', None) and not attrs.get('image', None):
+            raise ValidationError({
+                'message': 'Either add content or image!'})
+        return attrs
 
     def create(self, validated_data):
         FEED_TYPE_DICT = {
@@ -224,9 +218,11 @@ class FeedTemplateSerializer(serializers.ModelSerializer):
             'add_new_text': 'add_new_text',
 
         }
-        feed_template_dict = {
-            'content': validated_data['content']
-        }
+        feed_template_dict = {}
+        if validated_data.get('content', None):
+            feed_template_dict = {
+                'content': validated_data['content']
+            }
         if validated_data.get('image', None):
             feed_template_dict['image'] = validated_data['image']
             feed_template_dict['feed_type'] = FEED_TYPE_DICT['add_new_photo']
