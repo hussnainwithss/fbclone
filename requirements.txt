@@ -5,10 +5,14 @@ Django==3.2.4
 django-autoslug==1.9.8
 django-crispy-forms==1.12.0
 django-environ==0.4.5
+django-filter==2.4.0
+djangorestframework==3.12.4
 fontawesome-free==5.15.3
 isort==5.8.0
 lazy-object-proxy==1.6.0
+Markdown==3.3.4
 mccabe==0.6.1
+pep8==1.7.1
 Pillow==8.2.0
 progressbar2==3.53.1
 psycopg2-binary==2.8.6
