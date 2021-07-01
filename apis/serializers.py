@@ -2,10 +2,9 @@ from rest_framework.exceptions import ValidationError
 from accounts.models import CustomUser
 from datetime import date
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-from user_profile.models import UserProfile, Feed, FeedTemplate
+from user_profile.models import UserProfile, Post, FeedTemplate
 
 User = get_user_model()
 
@@ -26,26 +25,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'email',
                   'password', 'confirm_password', 'gender', 'birthday']
         extra_kwargs = {
-            'first_name': {
-                'required': True
-            },
-            'last_name': {
-                'required': True
-            },
-            'email': {
-                'required': True,
-                'validators': [UniqueValidator(queryset=User.objects.all(), message='User with this email already exists')]
-            },
             'password': {
                 'write_only': True,
-                'required': True,
                 'validators': [validate_password]
             },
-            'confirm_password': {
-                'write_only': True,
-                'required': True
-            },
-
         }
 
     def validate(self, attrs):
@@ -57,6 +40,18 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 {"birthday": "Date of Birth cannot be greater than current date"}
             )
         return attrs
+
+    def create(self, validated_data):
+        p_ = validated_data.pop('confirm_password')
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
+        user.first_name = validated_data['first_name']
+        user.last_name = validated_data['last_name']
+        _ = UserProfile.objects.create(
+            user=user, gender=validated_data['gender'], birthday=validated_data['birthday'])
+        return validated_data
 
 
 class UserPasswordChangeSerializer(serializers.Serializer):
@@ -94,18 +89,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['bio', 'hometown', 'education', 'work',
                   'gender', 'birthday', 'relationship_status', 'profile_picture', 'cover_picture']
         extra_kwargs = {
-            'bio': {
-                'required': False
-            },
-            'hometown': {
-                'required': False
-            },
-            'education': {
-                'required': False
-            },
-            'work': {
-                'required': False
-            },
             'gender': {
                 'required': False
             },
@@ -147,7 +130,6 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
             },
             'email': {
                 'required': False,
-                'validators': [UniqueValidator(queryset=User.objects.all(), message='User with this email already exists')]
             },
             'profile': {
                 'required': False
@@ -155,32 +137,13 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
         model = User
 
     def update(self, instance, validated_data):
-        instance.first_name = validated_data.get(
-            'first_name', instance.first_name)
-        instance.last_name = validated_data.get(
-            'last_name', instance.last_name)
-        instance.email = validated_data.get('email', instance.email)
-        instance.save()
-        if validated_data.get('profile', None):
-            user_profile_data = validated_data.pop('profile')
-            user_profile = instance.profile
+        if 'profile' in validated_data:
+            profile_serializer = self.fields['profile']
+            profile_instance = instance.profile
+            profile_data = validated_data.pop('profile')
 
-            user_profile.gender = user_profile_data.get(
-                'gender', user_profile.gender)
-            user_profile.work = user_profile_data.get(
-                'work', user_profile.work)
-            user_profile.education = user_profile_data.get(
-                'education', user_profile.education)
-            user_profile.bio = user_profile_data.get('bio', user_profile.bio)
-            user_profile.hometown = user_profile_data.get(
-                'hometown', user_profile.hometown)
-            user_profile.birthday = user_profile_data.get(
-                'birthday', user_profile.birthday)
-            user_profile.relationship_status = user_profile_data.get(
-                'relationship_status', user_profile.relationship_status)
-
-            user_profile.save()
-        return instance
+            profile_serializer.update(profile_instance, profile_data)
+        return super(UserProfileUpdateSerializer, self).update(instance, validated_data)
 
 
 class UserProfilePicturesUpdateSerializer(serializers.ModelSerializer):
@@ -200,9 +163,6 @@ class FeedTemplateSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'feed_type': {
                 'read_only': True
-            },
-            'content': {
-                'required': False
             },
         }
 
@@ -232,7 +192,7 @@ class FeedTemplateSerializer(serializers.ModelSerializer):
             **feed_template_dict)
 
         feed_template.save()
-        feed_obj = Feed.objects.create(
+        feed_obj = Post.objects.create(
             user=validated_data['user'], feed_template=feed_template)
         feed_obj.save()
         return feed_template

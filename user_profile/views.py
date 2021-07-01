@@ -59,7 +59,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         rather than a templateView
         """
         context = super().get_context_data(**kwargs)
-        context['feed_objects'] = models.Feed.objects.filter(
+        context['feed_objects'] = models.Post.objects.filter(
             user_id=self.request.user.id)
         return context
 
@@ -156,7 +156,7 @@ class UserFeedView(TemplateView, LoginRequiredMixin):
                 request, "User with user_id={} doesnt Exist!".format(user_id))
             return redirect('user_profile:settings')
         try:
-            context['feed_objects'] = models.Feed.objects.filter(
+            context['feed_objects'] = models.Post.objects.filter(
                 user_id=user_id)
         except Exception:
             messages.error(request, "Error Loading Feed for this user")
@@ -256,7 +256,7 @@ class CreatePostView(LoginRequiredMixin, View):
         form = forms.CreatePostForm(request.POST, request.FILES)
         if form.is_valid():
             feed_template = form.save()
-            feed_obj = models.Feed.objects.create(
+            feed_obj = models.Post.objects.create(
                 feed_template=feed_template, user=request.user)
             feed_obj.save()
             messages.success(request, "Update Successfully Posted")

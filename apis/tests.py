@@ -7,7 +7,7 @@ from rest_framework import response, status
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
-from user_profile.models import Feed
+from user_profile.models import Post
 User = get_user_model()
 
 
@@ -74,9 +74,9 @@ class TestRegistration(APITestCase):
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(User.objects.get().email, 'testuser@gmail.com')
         self.assertEqual(
-            Feed.objects.count(), 1)
+            Post.objects.count(), 1)
         self.assertEqual(
-            Feed.objects.get().feed_template.feed_type, 'register')
+            Post.objects.get().feed_template.feed_type, 'register')
 
 
 class TestLogin(APITestCase):
@@ -240,11 +240,11 @@ class TestUserPosts(APITestCase):
         response = create_post_request(
             self.client, self.correct_text_post_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Feed.objects.filter(
+        self.assertEqual(Post.objects.filter(
             user__email=self.user_reg_data['email']).count(), 2)
-        self.assertEqual(Feed.objects.get(
+        self.assertEqual(Post.objects.get(
             user__email=self.user_reg_data['email'], feed_template__content=self.correct_text_post_data['content']).feed_template.content, self.correct_text_post_data['content'])
-        self.assertEqual(Feed.objects.get(
+        self.assertEqual(Post.objects.get(
             user__email=self.user_reg_data['email'], feed_template__content=self.correct_text_post_data['content']).feed_template.feed_type, 'add_new_text')
 
     def test_invalid_post(self):
@@ -255,24 +255,24 @@ class TestUserPosts(APITestCase):
         response = create_post_request(
             self.client, self.correct_photo_post_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Feed.objects.filter(
+        self.assertEqual(Post.objects.filter(
             user__email=self.user_reg_data['email']).count(), 2)
-        self.assertEqual(Feed.objects.get(
+        self.assertEqual(Post.objects.get(
             user__email=self.user_reg_data['email'], feed_template__image__icontains='test').feed_template.feed_type, 'add_new_photo')
-        self.assertNotEqual(Feed.objects.get(
+        self.assertNotEqual(Post.objects.get(
             user__email=self.user_reg_data['email'], feed_template__feed_type='add_new_photo').feed_template.image, None)
 
     def test_complete_post(self):
         response = create_post_request(
             self.client, self.correct_complete_post_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Feed.objects.filter(
+        self.assertEqual(Post.objects.filter(
             user__email=self.user_reg_data['email']).count(), 2)
-        self.assertEqual(Feed.objects.get(
+        self.assertEqual(Post.objects.get(
             user__email=self.user_reg_data['email'], feed_template__content=self.correct_complete_post_data['content']).feed_template.content, self.correct_complete_post_data['content'])
-        self.assertEqual(Feed.objects.get(
+        self.assertEqual(Post.objects.get(
             user__email=self.user_reg_data['email'], feed_template__image__icontains='test').feed_template.feed_type, 'add_new_photo')
-        self.assertEqual(Feed.objects.get(
+        self.assertEqual(Post.objects.get(
             user__email=self.user_reg_data['email'], feed_template__content=self.correct_complete_post_data['content']).feed_template.feed_type, 'add_new_photo')
 
     def test_get_current_user_posts(self):
@@ -280,7 +280,7 @@ class TestUserPosts(APITestCase):
             self.client
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Feed.objects.filter(
+        self.assertEqual(Post.objects.filter(
             user__email=self.user_reg_data['email']).count(), len(response.data))
 
     def test_get_other_user_posts(self):
@@ -288,7 +288,7 @@ class TestUserPosts(APITestCase):
             self.client, id=2
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), Feed.objects.filter(
+        self.assertEqual(len(response.data), Post.objects.filter(
             user__id=2).count())
 
     def test_get_other_users_posts(self):
@@ -303,7 +303,7 @@ class TestUserPosts(APITestCase):
             self.client, id=1
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), Feed.objects.filter(
+        self.assertEqual(len(response.data), Post.objects.filter(
             user__id=1).count())
 
 
@@ -399,15 +399,15 @@ class TestUserSearch(APITestCase):
 
     correct_search_query = {
         'search': 'Awa',
-        'profile__hometown': 'lahore',
-        'profile__education': 'xyz',
-        'profile__relationship_status': 'Committed'
+        'hometown': 'lahore',
+        'education': 'xyz',
+        'relationship_status': 'Committed'
     }
     incorrect_search_query = {
         'search': 'Awa',
-        'profile__hometown': 'lahore',
-        'profile__education': 'xyz',
-        'profile__relationship_status': 'committed'
+        'hometown': 'lahore',
+        'education': 'xyz',
+        'relationship_status': 'committed'
     }
 
     def setUp(self):

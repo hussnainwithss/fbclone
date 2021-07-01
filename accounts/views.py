@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from user_profile.models import UserProfile, FeedTemplate, Feed
+from user_profile.models import UserProfile, FeedTemplate, Post
 from accounts import managers, models
 
 
@@ -94,7 +94,7 @@ class Register(View):
                 full_name=user.get_full_name())
             register_feed_template = FeedTemplate.objects.create(
                 content=registered_feed_content, feed_type='register')
-            register_feed_object = Feed.objects.create(
+            register_feed_object = Post.objects.create(
                 user=user, feed_template=register_feed_template)
             user.save()
             user_profile.save()

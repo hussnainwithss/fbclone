@@ -97,7 +97,7 @@ class UserProfile(models.Model):
     ]
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
-    bio = models.CharField(max_length=255, blank=True)
+    bio = models.TextField(max_length=255, blank=True)
     profile_picture = models.ImageField(upload_to='UserProfiles', blank=True)
     cover_picture = models.ImageField(upload_to='UserProfiles', blank=True)
 
@@ -142,7 +142,7 @@ class FeedTemplate(models.Model):
         return "{feed_type} | {content}".format(feed_type=self.feed_type, content=self.content)
 
 
-class Feed(models.Model):
+class Post(models.Model):
     """
     FeedModel species which feed_template belongs to which user
     """
