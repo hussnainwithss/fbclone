@@ -97,7 +97,7 @@ class UserProfile(models.Model):
     ]
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
-    bio = models.CharField(max_length=255, blank=True)
+    bio = models.TextField(max_length=255, blank=True)
     profile_picture = models.ImageField(upload_to='UserProfiles', blank=True)
     cover_picture = models.ImageField(upload_to='UserProfiles', blank=True)
 
@@ -122,7 +122,7 @@ class FeedTemplate(models.Model):
     FeedTemplate species the format of each feed object
 
     """
-    FEED_TYPE_CHOICES = [
+    feed_type_CHOICES = [
         ('register', 'register'),
         ('add_new_photo', 'add_new_photo'),
         ('add_new_text', 'add_new_text'),
@@ -136,13 +136,13 @@ class FeedTemplate(models.Model):
     image = models.ImageField(
         upload_to='UserProfiles/FeedTemplates', blank=True)
     feed_type = models.CharField(
-        max_length=15, choices=FEED_TYPE_CHOICES, default=REGISTER)
+        max_length=15, choices=feed_type_CHOICES, default=REGISTER)
 
     def __str__(self):
         return "{feed_type} | {content}".format(feed_type=self.feed_type, content=self.content)
 
 
-class Feed(models.Model):
+class Post(models.Model):
     """
     FeedModel species which feed_template belongs to which user
     """

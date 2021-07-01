@@ -110,9 +110,14 @@
                                     {{search_result.user.get_full_name}}{% if search_result.hometown %}, {{search_result.hometown}} {% endif %}
                                 </div>
                                 <div class="row" id='userGender'>{{search_result.gender}}, {{ search_result.get_age}}</div>
-                                <div class="row" id='userEducation'>{% if search_result.education %} {{search_result.education}} 
-                                {%elif search_result.work %} {{search_result.work}} 
-                                {% else %}{{user.relationship_status}}{% endif %}
+                                <div class="row" id='userEducation'>
+                                {% if search_result.education %} 
+                                        {{search_result.education}} 
+                                {%elif search_result.work %} 
+                                        {{search_result.work}} 
+                                {% else %}
+                                        {{search_result.relationship_status}}
+                                {% endif %}
                             </div>
                             </div>
                         </div>

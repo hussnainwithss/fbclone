@@ -17,34 +17,46 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FeedTemplate',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('content', models.CharField(blank=True, max_length=255)),
-                ('image', models.ImageField(blank=True, upload_to='UserProfiles/FeedTemplates')),
-                ('feed_type', models.CharField(choices=[('register', 'register'), ('add_new_photo', 'add_new_photo'), ('add_new_text', 'add_new_text'), ('add_new_friend', 'add_new_friend')], default='register', max_length=15)),
+                ('image', models.ImageField(blank=True,
+                 upload_to='UserProfiles/FeedTemplates')),
+                ('feed_type', models.CharField(choices=[('register', 'register'), ('add_new_photo', 'add_new_photo'), (
+                    'add_new_text', 'add_new_text'), ('add_new_friend', 'add_new_friend')], default='register', max_length=15)),
             ],
         ),
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('bio', models.CharField(blank=True, max_length=255)),
-                ('profile_picture', models.ImageField(blank=True, upload_to='UserProfiles')),
-                ('cover_picture', models.ImageField(blank=True, upload_to='UserProfiles')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('bio', models.TextField(blank=True, max_length=255)),
+                ('profile_picture', models.ImageField(
+                    blank=True, upload_to='UserProfiles')),
+                ('cover_picture', models.ImageField(
+                    blank=True, upload_to='UserProfiles')),
                 ('education', models.CharField(blank=True, max_length=255)),
                 ('work', models.CharField(blank=True, max_length=255)),
                 ('birthday', models.DateField()),
                 ('hometown', models.CharField(blank=True, max_length=255)),
-                ('gender', models.CharField(choices=[('Female', 'Female'), ('Male', 'Male'), ('Others', 'Others')], default='Female', max_length=6)),
-                ('relationship_status', models.CharField(choices=[('Single', 'Single'), ('Committed', 'Committed'), ('Married', 'Married'), ('Divorced', 'Divorced')], default='Single', max_length=10)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
+                ('gender', models.CharField(choices=[
+                 ('Female', 'Female'), ('Male', 'Male'), ('Others', 'Others')], default='Female', max_length=6)),
+                ('relationship_status', models.CharField(choices=[('Single', 'Single'), ('Committed', 'Committed'), (
+                    'Married', 'Married'), ('Divorced', 'Divorced')], default='Single', max_length=10)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='profile', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
-            name='Feed',
+            name='Post',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('feed_template', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='feed_template', to='user_profile.feedtemplate')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='feed_user', to=settings.AUTH_USER_MODEL)),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('feed_template', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='feed_template', to='user_profile.feedtemplate')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                 related_name='feed_user', to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

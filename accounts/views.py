@@ -1,15 +1,20 @@
 from django.db.utils import IntegrityError
+from django.dispatch import Signal
 from django.shortcuts import redirect
 from django.views import View
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from user_profile.models import UserProfile, FeedTemplate, Feed
+from user_profile.models import UserProfile, FeedTemplate, Post
 from accounts import managers, models
 
 
+user_profile_create_signal = Signal(
+    providing_args=['user', 'birthday', 'gender'])
+
 # Create your views here.
+
 
 class Login(View):
     """ VIew for Handling Login
@@ -67,7 +72,6 @@ class Register(View):
     """
 
     def post(self, request, *args, **kwargs):
-        registered_feed_content = '{full_name} has joined UBook'
         if 'email' in request.session:
             del request.session['email']
 
@@ -85,21 +89,10 @@ class Register(View):
         email = managers.CustomUserManager.normalize_email(email)
         user = None
         try:
-            user = models.CustomUser.objects.create(
-                email=email, first_name=first_name, last_name=last_name, is_active=True)
-            user.set_password(password1)
-            user_profile = UserProfile.objects.create(
-                user=user, birthday=birthday, gender=gender)
-            registered_feed_content = registered_feed_content.format(
-                full_name=user.get_full_name())
-            register_feed_template = FeedTemplate.objects.create(
-                content=registered_feed_content, feed_type='register')
-            register_feed_object = Feed.objects.create(
-                user=user, feed_template=register_feed_template)
-            user.save()
-            user_profile.save()
-            register_feed_template.save()
-            register_feed_object.save()
+            user = models.CustomUser.objects.create_user(
+                email=email, first_name=first_name, last_name=last_name, password=password1, is_active=True)
+            user_profile_create_signal.send(
+                sender=self.__class__, user=user, birthday=birthday, gender=gender)
             user = authenticate(request, email=email, password=password1)
             if user is not None and user.is_active:
                 login(request, user)

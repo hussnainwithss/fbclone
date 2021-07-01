@@ -59,7 +59,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         rather than a templateView
         """
         context = super().get_context_data(**kwargs)
-        context['feed_objects'] = models.Feed.objects.filter(
+        context['feed_objects'] = models.Post.objects.filter(
             user_id=self.request.user.id)
         return context
 
@@ -156,7 +156,7 @@ class UserFeedView(TemplateView, LoginRequiredMixin):
                 request, "User with user_id={} doesnt Exist!".format(user_id))
             return redirect('user_profile:settings')
         try:
-            context['feed_objects'] = models.Feed.objects.filter(
+            context['feed_objects'] = models.Post.objects.filter(
                 user_id=user_id)
         except Exception:
             messages.error(request, "Error Loading Feed for this user")
@@ -184,8 +184,9 @@ class SearchView(ListView, LoginRequiredMixin):
         """
         qs = super().get_queryset()
         # filter to get users that match our criteria
-        query = self.request.GET['search_query'] if self.request.GET.get(
-            'search_query', None) else self.request.POST['search_query']  # in case of ajax request post contains query else get contains
+
+        query = self.request.GET.get(
+            'search_query', self.request.POST.get('search_query'))  # in case of ajax request post contains query else get contains
         qs = qs.filter(Q(user__first_name__icontains=query)
                        | Q(user__last_name__icontains=query))
         qs = qs.filter(~Q(user__is_staff=True) and ~Q(
@@ -199,17 +200,16 @@ class SearchView(ListView, LoginRequiredMixin):
         we only wanna include values that are present in the search results
         to be present in the filters hence these filtering
         """
-        queryset = self.get_queryset().values_list(
-            'hometown', 'work', 'education').distinct()[1:]
+        queryset = self.get_queryset().filter(~Q(hometown__exact='') | ~Q(work__exact='') | ~Q(education__exact='')).values(
+            'hometown', 'work', 'education').distinct()
         context = super().get_context_data(**kwargs)
         context['search_query'] = self.request.GET['search_query']
-        context['hometowns'] = []
-        context['educations'] = []
-        context['works'] = []
-        for (hometown, work, education) in queryset:
-            context['hometowns'].append(hometown)
-            context['works'].append(work)
-            context['educations'].append(education)
+        context['hometowns'] = [search_filters['hometown']
+                                for search_filters in queryset if search_filters['hometown'] != '']
+        context['educations'] = [search_filters['education']
+                                 for search_filters in queryset if search_filters['education'] != '']
+        context['works'] = [search_filters['work']
+                            for search_filters in queryset if search_filters['work'] != '']
         return context
 
     def post(self, request, *args, **kwargs):
@@ -259,7 +259,7 @@ class CreatePostView(LoginRequiredMixin, View):
         form = forms.CreatePostForm(request.POST, request.FILES)
         if form.is_valid():
             feed_template = form.save()
-            feed_obj = models.Feed.objects.create(
+            feed_obj = models.Post.objects.create(
                 feed_template=feed_template, user=request.user)
             feed_obj.save()
             messages.success(request, "Update Successfully Posted")
