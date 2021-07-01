@@ -17,14 +17,18 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ('is_staff', 'is_active', 'is_superuser')
     fieldsets = (
         ('Basic Info', {
-         'fields': ('email', 'password', 'first_name', 'last_name',)}),
-        ('Permissions', {'classes': ('collapse',), 'fields': ('is_staff', 'is_active',
-                                                              'is_superuser', 'groups', 'user_permissions')}),
+            'fields': ('email', 'password', 'first_name', 'last_name',)
+        }),
+        ('Permissions', {'classes': ('collapse',),
+                         'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}),
     )
     add_fieldsets = (
-        ('Basic Info', {'fields': ('email', 'password1', 'password2', 'first_name',
-                                   'last_name',)}), ('Permissions', {'classes': ('collapse',),
-                                                                     'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Basic Info', {
+            'fields': ('email', 'password1', 'password2', 'first_name',
+                       'last_name',)
+        }),
+        ('Permissions', {'classes': ('collapse',),
+                         'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}),
     )
     search_fields = ('email',)
     ordering = ('email',)
