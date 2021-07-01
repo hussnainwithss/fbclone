@@ -9,7 +9,8 @@ from django.views import View
 from django.views.generic import TemplateView, ListView
 from django.db.models import Q
 from accounts.models import CustomUser
-from user_profile import models, forms
+from user_profile.models import UserProfile, FeedTemplate, Post
+from user_profile.forms import ProfilePictureForm, CoverPictureForm, CreatePostForm
 
 
 # Create your views here.
@@ -59,7 +60,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         rather than a templateView
         """
         context = super().get_context_data(**kwargs)
-        context['feed_objects'] = models.Post.objects.filter(
+        context['feed_objects'] = Post.objects.filter(
             user_id=self.request.user.id)
         return context
 
@@ -75,7 +76,7 @@ class UpdateProfilePictureView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         profile = request.user.profile
-        form = forms.ProfilePictureForm(
+        form = ProfilePictureForm(
             request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
@@ -96,7 +97,7 @@ class UpdateCoverPictureView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         profile = request.user.profile
-        form = forms.CoverPictureForm(
+        form = CoverPictureForm(
             request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
@@ -118,7 +119,7 @@ class UpdateProfileView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         profile = request.user.profile
-        form = forms.ProfileUpdate(request.POST, instance=profile)
+        form = ProfileUpdate(request.POST, instance=profile)
         if form.is_valid():
             form.save()
             request.user.first_name = form.cleaned_data['first_name']
@@ -156,7 +157,7 @@ class UserFeedView(TemplateView, LoginRequiredMixin):
                 request, "User with user_id={} doesnt Exist!".format(user_id))
             return redirect('user_profile:settings')
         try:
-            context['feed_objects'] = models.Post.objects.filter(
+            context['feed_objects'] = Post.objects.filter(
                 user_id=user_id)
         except Exception:
             messages.error(request, "Error Loading Feed for this user")
@@ -172,7 +173,7 @@ class SearchView(ListView, LoginRequiredMixin):
     """
     login_url = 'user_profile:index'
     template_name = 'pages/search.html'
-    model = models.UserProfile
+    model = UserProfile
 
     def get_queryset(self):
         """
@@ -256,10 +257,10 @@ class CreatePostView(LoginRequiredMixin, View):
     ADD_NEW_TEXT = 'add_new_text'
 
     def post(self, request, *args, **kwargs):
-        form = forms.CreatePostForm(request.POST, request.FILES)
+        form = CreatePostForm(request.POST, request.FILES)
         if form.is_valid():
             feed_template = form.save()
-            feed_obj = models.Post.objects.create(
+            feed_obj = Post.objects.create(
                 feed_template=feed_template, user=request.user)
             feed_obj.save()
             messages.success(request, "Update Successfully Posted")
