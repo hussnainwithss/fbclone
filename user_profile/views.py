@@ -231,15 +231,25 @@ class SearchView(ListView, LoginRequiredMixin):
                 users = serializers.serialize(
                     'json', qs)  # serialize values
                 # convert into dict to add more values
+
                 users = json.loads(users)
                 for user in users:
+                    if user['fields']['profile_picture'] is '':
+                        user['fields']['profile_picture'] = '/static/images/user.png'
+                    else:
+                        user['fields']['profile_picture'] = '/media/' + \
+                            user['fields']['profile_picture']
+                    if (user['fields']['hometown'] != ''):
+                        user['fields']['hometown'] = ', ' + \
+                            user['fields']['hometown']
+
                     user['fields']['user'] = {
                         'id': user['fields']['user'],
                         'name': User.objects.get(id=user['fields']['user']).get_full_name()
                     }
                     # add user name and age fields
                     user['fields']['age'] = qs.get(id=user['pk']).get_age()
-                return JsonResponse({"response": users}, status=200)
+                return JsonResponse({"users": users}, status=200)
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=400)
         return JsonResponse({"error": "Invalid request"}, status=400)
