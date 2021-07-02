@@ -4,14 +4,14 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, get_user_model
 from django.views import View
 from django.views.generic import TemplateView, ListView
 from django.db.models import Q
-from accounts.models import CustomUser
 from user_profile.models import UserProfile, FeedTemplate, Post
 from user_profile.forms import ProfilePictureForm, CoverPictureForm, CreatePostForm
 
+User = get_user_model()
 
 # Create your views here.
 
@@ -149,10 +149,10 @@ class UserFeedView(TemplateView, LoginRequiredMixin):
             return redirect('user_profile:settings')
         context = super(UserFeedView, self).get_context_data(*args, **kwargs)
         try:
-            context['feed_user'] = CustomUser.objects.get(id=user_id)
+            context['feed_user'] = User.objects.get(id=user_id)
             if context['feed_user'].is_staff or context['feed_user'].is_superuser:
-                raise CustomUser.DoesNotExist
-        except CustomUser.DoesNotExist:
+                raise User.DoesNotExist
+        except User.DoesNotExist:
             messages.error(
                 request, "User with user_id={} doesnt Exist!".format(user_id))
             return redirect('user_profile:settings')
@@ -228,18 +228,18 @@ class SearchView(ListView, LoginRequiredMixin):
                 search_filters = {k: v for k,
                                   v in search_filters.items() if v is not None}  # only keep keys that have not None values
                 qs = self.get_queryset().filter(**search_filters)
-                response = serializers.serialize(
+                users = serializers.serialize(
                     'json', qs)  # serialize values
                 # convert into dict to add more values
-                response = json.loads(response)
-                for obj in response:
-                    obj['fields']['user'] = {
-                        'id': obj['fields']['user'],
-                        'name': CustomUser.objects.get(id=obj['fields']['user']).get_full_name()
+                users = json.loads(users)
+                for user in users:
+                    user['fields']['user'] = {
+                        'id': user['fields']['user'],
+                        'name': User.objects.get(id=user['fields']['user']).get_full_name()
                     }
                     # add user name and age fields
-                    obj['fields']['age'] = qs.get(id=obj['pk']).get_age()
-                return JsonResponse({"response": response}, status=200)
+                    user['fields']['age'] = qs.get(id=user['pk']).get_age()
+                return JsonResponse({"response": users}, status=200)
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=400)
         return JsonResponse({"error": "Invalid request"}, status=400)

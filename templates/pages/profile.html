@@ -218,7 +218,7 @@
                                     </div>
                                     <div class="mb-2">
                                         <label for="work" class="form-label"><strong>Work:</strong></label>
-                                        <input type="text" class="form-control" id="hometown" placeholder="Work" value={% if request.user.profile.work %}{{request.user.profile.work}} {% else %} ''{% endif %} name='work' required>
+                                        <input type="text" class="form-control" id="work" placeholder="Work" value={% if request.user.profile.work %}{{request.user.profile.work}} {% else %} ''{% endif %} name='work' required>
                                     </div>
                                 <div class="mb-2">
                                     <label for="bio" class="form-label"><strong>Bio:</strong></label>
@@ -238,7 +238,7 @@
                                       </div>
                                       <div class="col-md-1 me-4">
                                         <div class="form-check">
-                                          <input class="form-check-input" type="radio" name="gender" id="gender-male" value='Female' {% if user.profile.gender == 'Female' %} checked {% endif %}>
+                                          <input class="form-check-input" type="radio" name="gender" id="gender-female" value='Female' {% if user.profile.gender == 'Female' %} checked {% endif %}>
                                           <label class="form-check-label" for="gender-female">
                                             Female
                                           </label>

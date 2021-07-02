@@ -107,7 +107,7 @@
                             </div>
                             <div class='col-auto' >
                                 <div class="row " id='userName'>
-                                    {{search_result.user.get_full_name}}{% if search_result.hometown %}, {{search_result.hometown}} {% endif %}
+                                {{search_result.user.first_name|capfirst}} {{search_result.user.last_name|capfirst}}{% if search_result.hometown %}, {{search_result.hometown}} {% endif %}
                                 </div>
                                 <div class="row" id='userGender'>{{search_result.gender}}, {{ search_result.get_age}}</div>
                                 <div class="row" id='userEducation'>
@@ -179,6 +179,7 @@
           let instance = response['response']
           $('#searchCards').empty();
           $('#resultCount').text(instance.length);
+          console.log(instance)
           for (const [key,obj] of Object.entries(instance)) {
             fields=obj['fields']
             var userID = fields['user']['id']
