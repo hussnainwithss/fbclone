@@ -29,6 +29,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 'write_only': True,
                 'validators': [validate_password]
             },
+
         }
 
     def validate(self, attrs):
@@ -42,14 +43,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        p_ = validated_data.pop('confirm_password')
+        validated_data.pop('confirm_password')
         user = User.objects.create_user(
             email=validated_data['email'],
-            password=validated_data['password']
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
         )
-        user.first_name = validated_data['first_name']
-        user.last_name = validated_data['last_name']
-        _ = UserProfile.objects.create(
+        UserProfile.objects.create(
             user=user, gender=validated_data['gender'], birthday=validated_data['birthday'])
         return validated_data
 

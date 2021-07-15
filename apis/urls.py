@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework.authtoken import views
 from apis.views import (UserRegistrationView, UserPasswordChangeView,
-                        UserProfileUpdateView, UserProfilePicturesUpdateView, UserPostListCreateView, UserSearchView)
+                        UserProfileUpdateView, UserProfilePicturesUpdateView, UserPostListCreateView, UserSearchView, UserRetrieveView)
 app_name = 'api'
 
 urlpatterns = [
@@ -13,5 +13,6 @@ urlpatterns = [
     path('update-profile-pictures/', UserProfilePicturesUpdateView.as_view(),
          name='update_profile_pictures'),
     path('post/', UserPostListCreateView.as_view(), name='post'),
-    path('search/', UserSearchView.as_view(), name='search')
+    path('search/', UserSearchView.as_view(), name='search'),
+    path('user/', UserRetrieveView.as_view(), name='user')
 ]

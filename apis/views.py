@@ -88,3 +88,15 @@ class UserSearchView(generics.ListAPIView):
 
     class Meta:
         model = User
+
+
+class UserRetrieveView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+
+    class Meta:
+        model = User
+
+    def get_object(self):
+        if self.request.query_params.get('id', None):
+            return User.objects.get(id=self.request.query_params.get('id'))
+        return self.request.user
