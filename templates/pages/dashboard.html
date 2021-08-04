@@ -1,0 +1,35 @@
+{% extends 'pages/profile.html' %}
+{% load static %}
+
+{% block user-feed %}
+<div class="card mb-5 " >
+
+  <div class="card-body">
+    <form action={% url 'user_profile:create-post' %} method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+    <div class="mb-3">
+        <textarea class="form-control card-text post-text" placeholder="What's on your mind....." rows="3" name='content' required></textarea>
+      </div>
+      <div class="mb-3">
+          <label for="post-image" class='form-label'>Upload Image</label>
+        <input accept="image/*" type="file" class="form-control" name="image"  data-buttonText="Attach Image" >
+      </div>
+      <button type="submit" class='btn btn-primary'>Post</button>
+    </form>
+    
+  </div>
+</div>
+{% for feed_object in feed_objects %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">{% if feed_object.feed_template.feed_type == 'register' %}HURRAY!{% endif %}</h5>
+    
+      <p class="card-text">{{feed_object.feed_template.content}}</p>
+      {% if feed_object.feed_template.image %}
+      <img src={{feed_object.feed_template.image.url}} class="card-img-bottom img-responsive" alt="Feed Image">
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}
+
