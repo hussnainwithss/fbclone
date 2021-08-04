@@ -75,7 +75,7 @@ class UserPostListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user_id = self.request.query_params.get('id', self.request.user.id)
-        return FeedTemplate.objects.filter(feed_template__user_id=user_id)
+        return FeedTemplate.objects.filter(feed_template__user_id=user_id).order_by('-created_at')
 
 
 class UserSearchView(generics.ListAPIView):

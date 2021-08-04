@@ -137,6 +137,7 @@ class FeedTemplate(models.Model):
         upload_to='UserProfiles/FeedTemplates', blank=True)
     feed_type = models.CharField(
         max_length=15, choices=FEED_TYPE_CHOICES, default=REGISTER)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return "{feed_type} | {content}".format(feed_type=self.feed_type, content=self.content)

@@ -1,4 +1,5 @@
 from rest_framework.exceptions import ValidationError
+from rest_framework.authtoken.models import Token
 from accounts.models import CustomUser
 from datetime import date
 from rest_framework import serializers
@@ -19,10 +20,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         choices=GENDER_CHOICES, required=True)
     birthday = serializers.DateField(required=True)
     confirm_password = serializers.CharField(write_only=True, required=True)
+    token = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email',
+        fields = ['token', 'first_name', 'last_name', 'email',
                   'password', 'confirm_password', 'gender', 'birthday']
         extra_kwargs = {
             'password': {
@@ -52,6 +54,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         )
         UserProfile.objects.create(
             user=user, gender=validated_data['gender'], birthday=validated_data['birthday'])
+        validated_data['token'] = Token.objects.get(user=user)
         return validated_data
 
 
@@ -119,10 +122,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(partial=True, required=False)
+    profile__age = serializers.SerializerMethodField(read_only=True)
+
+    def get_profile__age(self, obj):
+        return obj.profile.get_age()
 
     class Meta:
-        fields = ['first_name', 'last_name', 'email', 'profile']
+        fields = ['id', 'first_name', 'last_name',
+                  'email', 'profile', 'profile__age']
         extra_kwargs = {
+            'id': {
+                'read_only': True
+            },
             'first_name': {
                 'required': False
             },
@@ -160,11 +171,14 @@ class FeedTemplateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FeedTemplate
-        fields = ['user', 'content', 'image', 'feed_type']
+        fields = ['user', 'content', 'image', 'feed_type', 'created_at']
         extra_kwargs = {
             'feed_type': {
                 'read_only': True
             },
+            'created_at': {
+                'read_only': True
+            }
         }
 
     def validate(self, attrs):
