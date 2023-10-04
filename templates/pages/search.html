@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block body-content %}
+<div class="container search">
+    <div class="row ">
+        <div class="col-md-3">
+            <div class="card search-filter" >
+                <h5 class="card-header">
+                    Search Filters
+                </h5>
+                <div class="card-body">
+                    <form id='searchForm' method="POST">
+                      {% csrf_token  %}
+                        <div class="mb-3">
+                        <label for='searchHometowns' class='form-label'><strong>City</strong></label>
+                        <select class="form-select" aria-label="Select HomeTown" name='hometown' id='searchHometowns'>
+                            <option selected disabled>Select City</option>
+                            {% for hometown in hometowns %}
+                            <option value={{hometown}}>{{hometown}}</option>
+                            {% endfor %}
+                         
+                          </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for='searchSchool' class='form-label'><strong>School</strong></label>
+                            <select class="form-select" aria-label="Select School" name='education' id='searchSchool'>
+                                <option selected disabled>Select School</option>
+                                {% for education in educations %}
+                                <option value={{education}}>{{education}}</option>
+                                {% endfor %}
+                             
+                              </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for='searchWork' class='form-label'><strong>Work</strong></label>
+                                <select class="form-select" aria-label="Select Work" name='work' id='searchWork'>
+                                    <option selected disabled>Select Work</option>
+                                    {% for work in works %}
+                                    <option value={{work}}>{{work}}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+                            <div class="mb-3">
+                                <label for="gender mb-2"><strong>Gender:</strong></label>
+                                    <div class="row">
+                                      <div class="col-auto ">
+                                        <div class="form-check">
+                                          <input class="form-check-input" type="radio" name="gender" id='gender-male' value='Male' {% if user.profile.gender == 'Male' %} checked {% endif %} required>
+                                          <label class="form-check-label" for="gender-male">
+                                            Male
+                                          </label>
+                                        </div>
+                                      </div>
+                                      <div class="col-auto ">
+                                        <div class="form-check">
+                                          <input class="form-check-input" type="radio" name="gender" id="gender-male" value='Female' {% if user.profile.gender == 'Female' %} checked {% endif %}>
+                                          <label class="form-check-label" for="gender-female">
+                                            Female
+                                          </label>
+                                        </div>
+                                      </div>
+                                      <div class="col-auto ">
+                                        <div class="form-check">
+                                          <input class="form-check-input" type="radio" name="gender" id="gender-others" value='Others' {% if user.profile.gender == 'Other' %} checked {% endif %}>
+                                          <label class="form-check-label" for="gender-others">
+                                            Others
+                                          </label>
+                                        </div>
+                                      </div>
+                                    </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="relationship-status" class='mb-2'><strong>Relationship Status:</strong></label>
+                                    
+                                    <select class="form-select" id='relationship-status' name='relationship_status'>
+                                    <option selected disabled> Select Relationship Status</option>
+                                        <option  value="Single">Single</option>
+                                        <option  value="Committed">Committed</option>
+                                        <option value="Married">Married</option>
+                                        <option value="Divorced">Divorced</option>
+                                        
+                                      </select>
+                            </div>
+                            <div class="row">
+                              <div class="col-auto"><button class='btn btn-primary' type="submit">Apply Filters</button></div>
+                              <div class="col-auto"><button class='btn btn-danger' type="reset" id='resetButton'>Reset Filters</button></div>
+                            </div>
+                            
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div>
+                <h4> <span id='resultCount'>{{object_list|length}}</span> Search Result(s) for <span id='searchQuery'>{{search_query}}</span></h4>
+                {% if object_list|length > 0 %}
+                <div id="searchCards">
+                {% for search_result in object_list %}
+                <div class="card mb-2">
+                    <div class="card-body search-result no-decoration">
+                        <a href={% url 'user_profile:user-feed' search_result.user.id %} >
+                        <div class="row">
+                            <div class="col-auto"><img src={% if search_result.profile_picture %} {{search_result.profile_picture.url}} {% else %} {%static 'images/user.png' %} {% endif %} alt="{{search_result.user.first_name}}'s profile-picture" class="profile-card img-responsive rounded-circle">
+                            </div>
+                            <div class='col-auto' >
+                                <div class="row " id='userName'>
+                                    {{search_result.user.get_full_name}}{% if search_result.hometown %}, {{search_result.hometown}} {% endif %}
+                                </div>
+                                <div class="row" id='userGender'>{{search_result.gender}}, {{ search_result.get_age}}</div>
+                                <div class="row" id='userEducation'>{% if search_result.education %} {{search_result.education}} 
+                                {%elif search_result.work %} {{search_result.work}} 
+                                {% else %}{{user.relationship_status}}{% endif %}
+                            </div>
+                            </div>
+                        </div>
+                        </a>
+                        
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+                {% else %}
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Nothing to show</h4>
+                    </div>  
+                </div>
+                {% endif %}
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+{{block.super}}
+<script>
+  /*
+        On submiting the form, send the POST ajax
+        request to server and after successfull submission
+        display the object.
+    */
+    var original_data;
+    var original_count;
+    original_data = $('#searchCards')[0].cloneNode(true);
+    original_count = $("#resultCount").text();
+      
+    var search_query = $("<input>")
+        .attr("type", "hidden")
+        .attr("name", "search_query").val($('#searchQuery').text());
+      $('#searchForm').append(search_query);
+
+    $("#searchForm").submit(function (e) {
+      // preventing from page reload and default actions
+      e.preventDefault();
+      const csrftoken = Cookies.get('csrftoken');
+      // serialize the data for sending the form data.
+      let search_card = $("")
+      
+      let serializedData = $(this).serialize();
+      // make POST ajax call
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'user_profile:search' %}",
+        headers: { 'X-CSRFToken': csrftoken },
+        data: serializedData,
+        success: function (response) {
+          // display the newly friend to table.
+          let instance = response['response']
+          $('#searchCards').empty();
+          $('#resultCount').text(instance.length);
+          for (const [key,obj] of Object.entries(instance)) {
+            fields=obj['fields']
+            var userID = fields['user']['id']
+            var userProfile = '';
+            if (fields['profile_picture']!=''){
+               userProfile= '/media/'+fields['profile_picture']
+            } else{
+              userProfile = '/static/images/user.png'
+            }
+            var userName=fields['user']['name']
+            var userCity = '';
+            if (fields['hometown']!=''){
+                userCity = ', '+fields['hometown']
+            }
+            var userGender = fields['gender']
+            var userAge = fields['age']
+            var userExtra = fields['relationship_status'];
+            if (fields['education']!=''){
+              userExtra = fields['education']
+            }else if(fields['work']!=''){
+              userExtra = fields['work']
+            }
+            
+            card = `<div class="card mb-2">
+                    <div class="card-body search-result no-decoration">
+                        <a href="/user-feed/${userID}" >
+                        <div class="row">
+                            <div class="col-auto"><img src='${userProfile}' 
+                            alt="${userName}'s profile-picture" class="profile-card img-responsive rounded-circle">
+                            </div>
+                            <div class='col-auto' >
+                                <div class="row " id='userName'>
+                                  ${userName}${userCity}
+                                </div>
+                                <div class="row" id='userGender'>${userGender}, ${userAge}</div>
+                                <div class="row" id='userEducation'>${userExtra}
+                            </div>
+                            </div>
+                        </div>
+                        </a> 
+                    </div>
+                </div>`
+           
+         $('#searchCards').append(card);
+          }
+
+          
+         
+        },
+        error: function (response) {
+          // alert the error if any error occured
+          alert(response["responseJSON"]["error"]);
+        }
+      })
+    });
+    $("#resetButton").click(function (e) {
+      $('#searchCards').empty();
+      $('#searchCards').append(original_data);
+      $('#resultCount').text(original_count);
+      $("#searchCards")
+    });
+</script>
+{% endblock %}
